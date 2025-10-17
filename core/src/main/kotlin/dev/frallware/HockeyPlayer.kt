@@ -14,7 +14,8 @@ import com.badlogic.gdx.physics.box2d.World
 class HockeyPlayer(world: World) {
     companion object {
         const val RADIUS = 3f
-        const val ACCELERATION_FORCE = 2f
+        const val ACCELERATION_FORCE = 400f
+        const val MAX_VELOCITY = 20f
     }
 
     val body: Body
@@ -24,6 +25,7 @@ class HockeyPlayer(world: World) {
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
             position.set(HockeyRink.WIDTH / 2, HockeyRink.HEIGHT / 2) // Start at center of screen
+//            linearDamping = 2.0f // Adds friction/slowdown when no force applied
         }
 
         body = world.createBody(bodyDef)
@@ -36,8 +38,8 @@ class HockeyPlayer(world: World) {
         val fixtureDef = FixtureDef().apply {
             shape = circleShape
             density = 1.0f
-            restitution = 0.9f // High bounciness
-            friction = 0.3f
+            restitution = 0.2f // Bounce
+            friction = 0.6f // Low friction to slide along walls
         }
 
         body.createFixture(fixtureDef)
@@ -45,7 +47,7 @@ class HockeyPlayer(world: World) {
     }
 
     fun update() {
-        val force = Vector2.Zero
+        val force = Vector2(0f, 0f)
 
         // Check arrow key inputs and apply forces
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -63,6 +65,14 @@ class HockeyPlayer(world: World) {
 
         // Apply force to the body center
         body.applyForceToCenter(force, true)
+
+        // Clamp velocity to max speed
+        val velocity = body.linearVelocity
+        val speed = velocity.len()
+        if (speed > MAX_VELOCITY) {
+            velocity.scl(MAX_VELOCITY / speed)
+            body.linearVelocity = velocity
+        }
     }
 
     fun render(shapeRenderer: ShapeRenderer) {

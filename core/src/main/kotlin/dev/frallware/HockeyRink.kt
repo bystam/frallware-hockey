@@ -70,15 +70,16 @@ class HockeyRink {
 
 
 private fun World.createRink(): Body {
-    // Create a static body for the container (circular bowl)
+    // Create a static body for the container at origin
     val bodyDef = BodyDef().apply {
         type = BodyDef.BodyType.StaticBody
-        position.set(HockeyRink.WIDTH / 2, HockeyRink.HEIGHT / 2) // Start at center of screen
+        position.set(0f, 0f)
     }
 
     val body = createBody(bodyDef)
 
     // Create rectangular boundary using chain of edges
+    // Vertices are in world coordinates since body is at origin
     val vertices = listOf(
         Vector2(0f, 0f),
         Vector2(0f, HockeyRink.HEIGHT),
@@ -90,8 +91,8 @@ private fun World.createRink(): Body {
     shape.createLoop(vertices.toTypedArray())
 
     body.createFixture(shape, 0f).apply {
-        restitution = 0.8f // Bounciness
-        friction = 0.3f
+        restitution = 0.2f // No bounce - absorbs impact
+        friction = 0.6f // Low friction to slide along walls
     }
 
     shape.dispose()
