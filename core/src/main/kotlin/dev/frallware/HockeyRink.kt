@@ -19,7 +19,7 @@ class HockeyRink {
         const val HEIGHT = 30f
     }
 
-    val viewport: Viewport = FitViewport(WIDTH + 10, HEIGHT + 10)
+    val viewport: Viewport = FitViewport(WIDTH, HEIGHT)
     val world: World = World(Vector2.Zero, true)
     val body: Body = world.createRink()
     val player: HockeyPlayer = HockeyPlayer(world)
@@ -28,6 +28,11 @@ class HockeyRink {
 
     fun render() {
         val delta = Gdx.graphics.deltaTime
+
+        // Update player input
+        player.update()
+
+        // Step physics simulation
         world.step(1/60f, 6, 2)
 
         // Clear screen
@@ -43,7 +48,7 @@ class HockeyRink {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
 
-        // Draw red container
+        // Draw red container (centered)
         shapeRenderer.color = Color.RED
         shapeRenderer.rect(
             0f,
@@ -73,12 +78,12 @@ private fun World.createRink(): Body {
 
     val body = createBody(bodyDef)
 
-    // Create circular shape using chain of edges
+    // Create rectangular boundary using chain of edges
     val vertices = listOf(
         Vector2(0f, 0f),
         Vector2(0f, HockeyRink.HEIGHT),
-        Vector2(HockeyRink.WIDTH, 0f),
         Vector2(HockeyRink.WIDTH, HockeyRink.HEIGHT),
+        Vector2(HockeyRink.WIDTH, 0f),
     )
 
     val shape = ChainShape()
