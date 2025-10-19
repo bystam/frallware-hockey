@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -25,10 +26,12 @@ class HockeyPlayer(world: World) {
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
             position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2) // Start at center of screen
+            angle = MathUtils.HALF_PI
             linearDamping = 0.5f // Adds friction/slowdown when no force applied
         }
 
         body = world.createBody(bodyDef)
+        body.isFixedRotation = true
 
         // Create circular shape for the ball
         val circleShape = CircleShape().apply {
@@ -39,7 +42,7 @@ class HockeyPlayer(world: World) {
             shape = circleShape
             density = 1.0f
             restitution = 0.2f // Bounce
-            friction = 0.6f // Low friction to slide along walls
+            friction = 0.6f
         }
 
         body.createFixture(fixtureDef)
@@ -47,24 +50,21 @@ class HockeyPlayer(world: World) {
     }
 
     fun update() {
-        val force = Vector2(0f, 0f)
+        val angle = body.angle
+        val forward = Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
 
-        // Check arrow key inputs and apply forces
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            force.x -= ACCELERATION_FORCE
+            body.setTransform(body.position, angle + 0.05f)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            force.x += ACCELERATION_FORCE
+            body.setTransform(body.position, angle + -0.05f)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            force.y += ACCELERATION_FORCE
+            body.applyForceToCenter(forward.scl(ACCELERATION_FORCE), true)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            force.y -= ACCELERATION_FORCE
+            body.applyForceToCenter(forward.scl(-ACCELERATION_FORCE), true)
         }
-
-        // Apply force to the body center
-        body.applyForceToCenter(force, true)
 
         // Clamp velocity to max speed
         val velocity = body.linearVelocity
@@ -85,6 +85,16 @@ class HockeyPlayer(world: World) {
             body.position.y,
             RADIUS,
             20
+        )
+
+        val headOffset = Vector2(1f, 0f).rotateRad(body.angle)
+
+        shapeRenderer.color = Color.GREEN
+        shapeRenderer.circle(
+            body.position.x + headOffset.x,
+            body.position.y + headOffset.y,
+            1f,
+            20,
         )
 
         shapeRenderer.end()

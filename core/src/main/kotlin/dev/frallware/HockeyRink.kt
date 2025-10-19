@@ -17,7 +17,6 @@ class HockeyRink(
         const val WIDTH = 60f
         const val HEIGHT = 30f
 
-
         val bottomLeft = Vector2(-WIDTH / 2, -HEIGHT / 2)
         val topLeft = Vector2(-WIDTH / 2, HEIGHT / 2)
         val topRight = Vector2(WIDTH / 2, HEIGHT / 2)
@@ -51,7 +50,7 @@ class HockeyRink(
         shapeRenderer.dispose()
         world.dispose()
     }
-    
+
     private fun createRink(): Body {
         // Create a static body for the container at origin
         val bodyDef = BodyDef().apply {
@@ -68,7 +67,7 @@ class HockeyRink(
 
         body.createFixture(shape, 0f).apply {
             restitution = 0.2f // No bounce - absorbs impact
-            friction = 0.6f // Low friction to slide along walls
+            friction = 0.6f
         }
 
         shape.dispose()
