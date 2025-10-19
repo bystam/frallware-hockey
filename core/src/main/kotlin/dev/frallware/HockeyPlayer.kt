@@ -75,9 +75,7 @@ class HockeyPlayer(world: World) {
         }
     }
 
-    fun render(shapeRenderer: ShapeRenderer) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-
+    fun render(shapeRenderer: ShapeRenderer) = shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
         // Draw blue ball
         shapeRenderer.color = Color.BLUE
         shapeRenderer.circle(
@@ -96,7 +94,5 @@ class HockeyPlayer(world: World) {
             1f,
             20,
         )
-
-        shapeRenderer.end()
     }
 }
