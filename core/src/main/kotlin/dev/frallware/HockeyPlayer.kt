@@ -21,16 +21,19 @@ class HockeyPlayer(world: World) {
 
     val body: Body
 
+    private var puck: Puck? = null
+
     init {
         // Create a dynamic body for the ball
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
-            position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2) // Start at center of screen
+            position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2 - 5f) // Start at center of screen
             angle = MathUtils.HALF_PI
             linearDamping = 0.5f // Adds friction/slowdown when no force applied
         }
 
         body = world.createBody(bodyDef)
+        body.userData = this
         body.isFixedRotation = true
 
         // Create circular shape for the ball
@@ -49,6 +52,11 @@ class HockeyPlayer(world: World) {
         circleShape.dispose()
     }
 
+    fun takePuck(puck: Puck) {
+        this.puck = puck
+        puck.body.fixtureList.forEach { it.isSensor = true }
+    }
+
     fun update() {
         val angle = body.angle
         val forward = Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
@@ -65,6 +73,14 @@ class HockeyPlayer(world: World) {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             body.applyForceToCenter(forward.scl(-ACCELERATION_FORCE), true)
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            puck?.let { puck ->
+                val direction = Vector2(1f, 0f).rotateRad(body.angle)
+                puck.body.fixtureList.forEach { it.isSensor = false }
+                puck.body.applyLinearImpulse(direction.scl(120f), puck.body.worldCenter, true)
+                this.puck = null
+            }
+        }
 
         // Clamp velocity to max speed
         val velocity = body.linearVelocity
@@ -73,10 +89,16 @@ class HockeyPlayer(world: World) {
             velocity.scl(MAX_VELOCITY / speed)
             body.linearVelocity = velocity
         }
+
+        puck?.let { puck ->
+            val puckOffset = Vector2(2.5f, -2.5f).rotateRad(body.angle)
+            val worldPos = body.position.cpy().add(puckOffset)
+            puck.body.setTransform(worldPos, body.angle)
+            puck.body.linearVelocity = body.linearVelocity
+        }
     }
 
     fun render(shapeRenderer: ShapeRenderer) = shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
-        // Draw blue ball
         shapeRenderer.color = Color.BLUE
         shapeRenderer.circle(
             body.position.x,

@@ -6,6 +6,10 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
+import com.badlogic.gdx.physics.box2d.Contact
+import com.badlogic.gdx.physics.box2d.ContactImpulse
+import com.badlogic.gdx.physics.box2d.ContactListener
+import com.badlogic.gdx.physics.box2d.Manifold
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.viewport.FitViewport
 
@@ -29,6 +33,35 @@ class HockeyRink(
     private val rinkCenter: Vector2 = body.worldCenter.cpy()
 
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
+
+    init {
+        world.setContactListener(object : ContactListener {
+            override fun beginContact(contact: Contact) {
+                val aData = contact.fixtureA.body.userData
+                val bData = contact.fixtureB.body.userData
+                val puck = (aData as? Puck) ?: (bData as? Puck)
+                val player = (aData as? HockeyPlayer) ?: (bData as? HockeyPlayer)
+                if (puck != null && player != null) {
+                    player.takePuck(puck)
+                }
+            }
+
+            override fun endContact(contact: Contact) {
+            }
+
+            override fun preSolve(
+                contact: Contact,
+                oldManifold: Manifold
+            ) {
+            }
+
+            override fun postSolve(
+                contact: Contact,
+                impulse: ContactImpulse
+            ) {
+            }
+        })
+    }
 
     fun update() {
         player.update()

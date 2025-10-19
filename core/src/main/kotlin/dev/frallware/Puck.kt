@@ -25,6 +25,7 @@ class Puck(world: World) {
         }
 
         body = world.createBody(bodyDef)
+        body.userData = this
 
         // Create circular shape for the ball
         val circleShape = CircleShape().apply {
