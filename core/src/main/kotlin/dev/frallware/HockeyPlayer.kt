@@ -24,8 +24,8 @@ class HockeyPlayer(world: World) {
         // Create a dynamic body for the ball
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
-            position.set(HockeyRink.WIDTH / 2, HockeyRink.HEIGHT / 2) // Start at center of screen
-//            linearDamping = 2.0f // Adds friction/slowdown when no force applied
+            position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2) // Start at center of screen
+            linearDamping = 0.5f // Adds friction/slowdown when no force applied
         }
 
         body = world.createBody(bodyDef)
