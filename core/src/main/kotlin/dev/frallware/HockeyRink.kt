@@ -34,14 +34,21 @@ class HockeyRink(
 
     fun render() {
         shapeRenderer.projectionMatrix = viewport.camera.combined
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+        val bl = body.worldCenter + bottomLeft
+        val tl = body.worldCenter + topLeft
+        val tr = body.worldCenter + topRight
+        val br = body.worldCenter + bottomRight
 
-        // Draw red container (centered)
-        shapeRenderer.color = Color.RED
-        val bottomLeft = body.worldCenter.add(bottomLeft)
-        shapeRenderer.rect(bottomLeft.x, bottomLeft.y, WIDTH, HEIGHT)
-
-        shapeRenderer.end()
+        shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
+            color = Color.WHITE.withAlpha(0.8f)
+            rect(bl.x, bl.y, WIDTH, HEIGHT)
+         
+            color = Color.RED
+            rectLine(bl, tl, 0.3f)
+            rectLine(tl, tr, 0.3f)
+            rectLine(tr, br, 0.3f)
+            rectLine(br, bl, 0.3f)
+        }
 
         player.render(shapeRenderer)
     }
