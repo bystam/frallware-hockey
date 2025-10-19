@@ -25,6 +25,7 @@ class HockeyRink(
 
     val body: Body = createRink()
     val player: HockeyPlayer = HockeyPlayer(world)
+    val puck: Puck = Puck(world)
     private val rinkCenter: Vector2 = body.worldCenter.cpy()
 
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
@@ -52,6 +53,7 @@ class HockeyRink(
         }
 
         player.render(shapeRenderer)
+        puck.render(shapeRenderer)
     }
 
     fun dispose() {
