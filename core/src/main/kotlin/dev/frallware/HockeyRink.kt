@@ -25,6 +25,7 @@ class HockeyRink(
 
     val body: Body = createRink()
     val player: HockeyPlayer = HockeyPlayer(world)
+    private val rinkCenter: Vector2 = body.worldCenter.cpy()
 
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
 
@@ -34,15 +35,15 @@ class HockeyRink(
 
     fun render() {
         shapeRenderer.projectionMatrix = viewport.camera.combined
-        val bl = body.worldCenter + bottomLeft
-        val tl = body.worldCenter + topLeft
-        val tr = body.worldCenter + topRight
-        val br = body.worldCenter + bottomRight
+        val bl = rinkCenter + bottomLeft
+        val tl = rinkCenter + topLeft
+        val tr = rinkCenter + topRight
+        val br = rinkCenter + bottomRight
 
         shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
             color = Color.WHITE.withAlpha(0.8f)
             rect(bl.x, bl.y, WIDTH, HEIGHT)
-         
+
             color = Color.RED
             rectLine(bl, tl, 0.3f)
             rectLine(tl, tr, 0.3f)
