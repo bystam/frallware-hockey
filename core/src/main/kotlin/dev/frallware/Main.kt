@@ -14,7 +14,6 @@ import dev.frallware.HockeyRink.Companion.WIDTH
 
 /**
  * TODO:
- * - Add 2 goals
  * - Reset game upon goal
  */
 class Main : ApplicationAdapter() {
