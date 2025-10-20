@@ -70,8 +70,7 @@ class HockeyPlayer(world: World) {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             body.applyForceToCenter(forward.scl(ACCELERATION_FORCE), true)
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             body.applyForceToCenter(forward.scl(-ACCELERATION_FORCE), true)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
