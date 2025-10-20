@@ -2,10 +2,12 @@ package dev.frallware
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
+import dev.frallware.HockeyPlayer.Companion.SHOT_FORCE
 
 class Puck(world: World) {
 
@@ -36,6 +38,12 @@ class Puck(world: World) {
             friction = 0.0f
         }
         circleShape.dispose()
+    }
+
+    fun shoot(angle: Float) {
+        val direction = Vector2(1f, 0f).rotateRad(angle)
+        body.fixtureList.forEach { it.isSensor = false }
+        body.applyLinearImpulse(direction.scl(SHOT_FORCE), Vector2.Zero, true)
     }
 
     fun slowDown() {

@@ -74,12 +74,8 @@ class HockeyPlayer(world: World) {
             body.applyForceToCenter(forward.scl(-ACCELERATION_FORCE), true)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            puck?.let { puck ->
-                val direction = Vector2(1f, 0f).rotateRad(body.angle)
-                puck.body.fixtureList.forEach { it.isSensor = false }
-                puck.body.applyLinearImpulse(direction.scl(SHOT_FORCE), puck.body.localCenter, true)
-                this.puck = null
-            }
+            puck?.shoot(body.angle)
+            puck = null
         }
 
         // Clamp velocity to max speed
