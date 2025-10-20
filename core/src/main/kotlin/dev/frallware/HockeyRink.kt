@@ -85,8 +85,8 @@ class HockeyRink(
             rectLine(br, bl, 0.3f)
         }
 
-        player.render(shapeRenderer)
         puck.render(shapeRenderer)
+        player.render(shapeRenderer)
     }
 
     fun dispose() {

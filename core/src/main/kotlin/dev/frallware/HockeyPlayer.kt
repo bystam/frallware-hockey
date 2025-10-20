@@ -14,8 +14,9 @@ import com.badlogic.gdx.physics.box2d.World
 
 class HockeyPlayer(world: World) {
     companion object {
-        const val RADIUS = 3f
-        const val ACCELERATION_FORCE = 400f
+        const val RADIUS = 1f
+        const val ACCELERATION_FORCE = 40f
+        const val SHOT_FORCE = 20f
         const val MAX_VELOCITY = 20f
     }
 
@@ -77,7 +78,7 @@ class HockeyPlayer(world: World) {
             puck?.let { puck ->
                 val direction = Vector2(1f, 0f).rotateRad(body.angle)
                 puck.body.fixtureList.forEach { it.isSensor = false }
-                puck.body.applyLinearImpulse(direction.scl(120f), puck.body.worldCenter, true)
+                puck.body.applyLinearImpulse(direction.scl(SHOT_FORCE), puck.body.worldCenter, true)
                 this.puck = null
             }
         }
@@ -91,7 +92,7 @@ class HockeyPlayer(world: World) {
         }
 
         puck?.let { puck ->
-            val puckOffset = Vector2(2.5f, -2.5f).rotateRad(body.angle)
+            val puckOffset = Vector2(0.8f * RADIUS, -0.8f * RADIUS).rotateRad(body.angle)
             val worldPos = body.position.cpy().add(puckOffset)
             puck.body.setTransform(worldPos, body.angle)
             puck.body.linearVelocity = body.linearVelocity
@@ -107,13 +108,13 @@ class HockeyPlayer(world: World) {
             20
         )
 
-        val headOffset = Vector2(1f, 0f).rotateRad(body.angle)
+        val headOffset = Vector2(0.4f, 0f).rotateRad(body.angle)
 
         shapeRenderer.color = Color.GREEN
         shapeRenderer.circle(
             body.position.x + headOffset.x,
             body.position.y + headOffset.y,
-            1f,
+            0.4f,
             20,
         )
     }

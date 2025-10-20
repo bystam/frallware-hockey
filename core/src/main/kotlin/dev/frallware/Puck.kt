@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World
 class Puck(world: World) {
 
     companion object {
-        const val RADIUS = 0.8f
+        const val RADIUS = 0.4f
     }
 
     val body: Body

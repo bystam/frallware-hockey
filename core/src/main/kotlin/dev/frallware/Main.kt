@@ -12,7 +12,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import dev.frallware.HockeyRink.Companion.HEIGHT
 import dev.frallware.HockeyRink.Companion.WIDTH
 
-/** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
+/**
+ * TODO:
+ * - Add 2 goals
+ * - Reset game upon goal
+ */
 class Main : ApplicationAdapter() {
 
     val viewport: FitViewport = FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
