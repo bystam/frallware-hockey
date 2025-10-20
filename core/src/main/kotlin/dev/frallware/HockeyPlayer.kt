@@ -99,7 +99,7 @@ class HockeyPlayer(world: World) {
         }
     }
 
-    fun render(shapeRenderer: ShapeRenderer) = shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
+    fun render(shapeRenderer: ShapeRenderer) {
         shapeRenderer.color = Color.BLUE
         shapeRenderer.circle(
             body.position.x,

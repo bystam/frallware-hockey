@@ -30,8 +30,10 @@ class HockeyRink(
     val body: Body = createRink()
     val player: HockeyPlayer = HockeyPlayer(world)
     val puck: Puck = Puck(world)
-    private val rinkCenter: Vector2 = body.worldCenter.cpy()
+    val leftGoal = Goal(world, Side.Left)
+    val rightGoal = Goal(world, Side.Right)
 
+    private val rinkCenter: Vector2 = body.worldCenter.cpy()
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
 
     init {
@@ -41,8 +43,12 @@ class HockeyRink(
                 val bData = contact.fixtureB.body.userData
                 val puck = (aData as? Puck) ?: (bData as? Puck)
                 val player = (aData as? HockeyPlayer) ?: (bData as? HockeyPlayer)
+                val goal = (aData as? Goal) ?: (bData as? Goal)
                 if (puck != null && player != null) {
                     player.takePuck(puck)
+                }
+                if (puck != null && goal != null) {
+                    puck.slowDown()
                 }
             }
 
@@ -69,24 +75,27 @@ class HockeyRink(
 
     fun render() {
         shapeRenderer.projectionMatrix = viewport.camera.combined
+
         val bl = rinkCenter + bottomLeft
         val tl = rinkCenter + topLeft
         val tr = rinkCenter + topRight
         val br = rinkCenter + bottomRight
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
-        shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
-            color = Color.WHITE.withAlpha(0.8f)
-            rect(bl.x, bl.y, WIDTH, HEIGHT)
+        shapeRenderer.color = Color.WHITE.withAlpha(0.8f)
+        shapeRenderer.rect(bl.x, bl.y, WIDTH, HEIGHT)
 
-            color = Color.RED
-            rectLine(bl, tl, 0.3f)
-            rectLine(tl, tr, 0.3f)
-            rectLine(tr, br, 0.3f)
-            rectLine(br, bl, 0.3f)
-        }
+        shapeRenderer.color = Color.RED
+        shapeRenderer.rectLine(bl, tl, 0.3f)
+        shapeRenderer.rectLine(tl, tr, 0.3f)
+        shapeRenderer.rectLine(tr, br, 0.3f)
+        shapeRenderer.rectLine(br, bl, 0.3f)
 
         puck.render(shapeRenderer)
+        leftGoal.render(shapeRenderer)
+        rightGoal.render(shapeRenderer)
         player.render(shapeRenderer)
+        shapeRenderer.end()
     }
 
     fun dispose() {

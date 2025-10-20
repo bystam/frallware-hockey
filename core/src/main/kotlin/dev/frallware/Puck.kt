@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
-import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.World
 
 class Puck(world: World) {
@@ -32,18 +31,18 @@ class Puck(world: World) {
             radius = RADIUS
         }
 
-        val fixtureDef = FixtureDef().apply {
-            shape = circleShape
-            density = 1.0f
-            restitution = 1.0f // Bounce
+        body.createFixture(circleShape, 1.0f).apply {
+            restitution = 0.6f // Bounce
             friction = 0.0f
         }
-
-        body.createFixture(fixtureDef)
         circleShape.dispose()
     }
 
-    fun render(shapeRenderer: ShapeRenderer) = shapeRenderer.batch(ShapeRenderer.ShapeType.Filled) {
+    fun slowDown() {
+        body.linearVelocity = body.linearVelocity.scl(0.03f)
+    }
+
+    fun render(shapeRenderer: ShapeRenderer) {
         shapeRenderer.color = Color.BLACK
         shapeRenderer.circle(
             body.position.x,
