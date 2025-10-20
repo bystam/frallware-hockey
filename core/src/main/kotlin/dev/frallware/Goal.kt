@@ -28,8 +28,8 @@ class Goal(world: World, val side: Side) {
             type = BodyDef.BodyType.StaticBody
             val yPos = Constants.WORLD_HEIGHT / 2
             when (side) {
-                Side.Left -> position.set(20f, yPos)
-                Side.Right -> position.set(Constants.WORLD_WIDTH - 20f, yPos)
+                Side.Left -> position.set(15f, yPos)
+                Side.Right -> position.set(Constants.WORLD_WIDTH - 15f, yPos)
             }
         }
 
@@ -37,7 +37,7 @@ class Goal(world: World, val side: Side) {
         body.userData = this
 
         for (j in joints) {
-            j.scl(2f)
+            j.scl(3f)
         }
 
         if (side == Side.Left) {
