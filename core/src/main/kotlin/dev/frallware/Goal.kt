@@ -2,7 +2,6 @@ package dev.frallware
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -40,9 +39,10 @@ class Goal(world: World, val side: Side) {
             j.scl(3f)
         }
 
+        // mirror
         if (side == Side.Left) {
             for (joint in joints) {
-                joint.rotateRad(MathUtils.PI)
+                joint.x = -joint.x
             }
         }
 
