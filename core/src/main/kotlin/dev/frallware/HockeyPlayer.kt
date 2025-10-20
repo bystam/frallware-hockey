@@ -77,7 +77,7 @@ class HockeyPlayer(world: World) {
             puck?.let { puck ->
                 val direction = Vector2(1f, 0f).rotateRad(body.angle)
                 puck.body.fixtureList.forEach { it.isSensor = false }
-                puck.body.applyLinearImpulse(direction.scl(SHOT_FORCE), puck.body.worldCenter, true)
+                puck.body.applyLinearImpulse(direction.scl(SHOT_FORCE), puck.body.localCenter, true)
                 this.puck = null
             }
         }
