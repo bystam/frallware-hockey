@@ -14,10 +14,12 @@ class Puck(world: World) {
     companion object {
         const val RADIUS = 0.4f
 
-        val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2 + 5f)
+        val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2)
     }
 
     val body: Body
+
+    private var contactCount: Int = 0
 
     init {
         // Create a dynamic body for the ball
@@ -48,10 +50,6 @@ class Puck(world: World) {
         body.applyLinearImpulse(direction.scl(SHOT_FORCE), Vector2.Zero, true)
     }
 
-    fun drop() {
-        body.fixtureList.forEach { it.isSensor = false }
-    }
-
     fun slowDown() {
         body.linearVelocity = body.linearVelocity.scl(0.03f)
     }
@@ -59,6 +57,17 @@ class Puck(world: World) {
     fun reset() {
         body.setTransform(startingPoint, 0f)
         body.linearVelocity = Vector2.Zero
+    }
+
+    fun registerContact() {
+        contactCount += 1
+    }
+
+    fun deregisterContact() {
+        contactCount -= 1
+        if (contactCount == 0 && body.fixtureList[0].isSensor) {
+            body.fixtureList[0].isSensor = false
+        }
     }
 
     fun render(shapeRenderer: ShapeRenderer) {

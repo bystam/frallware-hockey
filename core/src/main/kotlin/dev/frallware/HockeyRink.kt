@@ -24,7 +24,8 @@ class HockeyRink(
     }
 
     val body: Body = createRink()
-    val player: HockeyPlayer = HockeyPlayer(world)
+    val leftPlayer: HockeyPlayer = HockeyPlayer(world, Side.Left)
+    val rightPlayer: HockeyPlayer = HockeyPlayer(world, Side.Right)
     val puck: Puck = Puck(world)
     val leftGoal = Goal(world, Side.Left)
     val rightGoal = Goal(world, Side.Right)
@@ -33,12 +34,14 @@ class HockeyRink(
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
 
     fun reset() {
-        player.reset()
+        leftPlayer.reset()
+        rightPlayer.reset()
         puck.reset()
     }
 
     fun update() {
-        player.update()
+        leftPlayer.update()
+        rightPlayer.update()
     }
 
     fun render() {
@@ -62,7 +65,8 @@ class HockeyRink(
         puck.render(shapeRenderer)
         leftGoal.render(shapeRenderer)
         rightGoal.render(shapeRenderer)
-        player.render(shapeRenderer)
+        leftPlayer.render(shapeRenderer)
+        rightPlayer.render(shapeRenderer)
         shapeRenderer.end()
     }
 

@@ -51,6 +51,8 @@ class Main : ApplicationAdapter() {
                 val goal = (aData as? Goal) ?: (bData as? Goal)
                 val goalSensor = (aData as? Goal.Sensor) ?: (bData as? Goal.Sensor)
 
+                puck?.registerContact()
+
                 if (puck != null && player != null) {
                     player.takePuck(puck)
                 }
@@ -61,9 +63,21 @@ class Main : ApplicationAdapter() {
                     scores[goalSensor.side.opponent] = scores[goalSensor.side.opponent]!! + 1
                     goalResetAt = Instant.now().plusSeconds(3)
                 }
+                if (aData is HockeyPlayer && bData is HockeyPlayer) {
+                    val speed = aData.body.linearVelocity.cpy().sub(bData.body.linearVelocity)
+                    if (speed.len() > 5f) {
+                        aData.dropPuck()
+                        bData.dropPuck()
+                    }
+                }
             }
 
             override fun endContact(contact: Contact) {
+                val aData = contact.fixtureA.userData
+                val bData = contact.fixtureB.userData
+                val puck = (aData as? Puck) ?: (bData as? Puck)
+
+                puck?.deregisterContact()
             }
 
             override fun preSolve(
