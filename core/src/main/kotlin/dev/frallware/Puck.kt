@@ -13,6 +13,8 @@ class Puck(world: World) {
 
     companion object {
         const val RADIUS = 0.4f
+
+        val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2 + 5f)
     }
 
     val body: Body
@@ -21,7 +23,7 @@ class Puck(world: World) {
         // Create a dynamic body for the ball
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
-            position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2 + 5f)
+            position.set(startingPoint)
             linearDamping = 0.5f // Adds friction/slowdown when no force applied
         }
 
@@ -46,8 +48,17 @@ class Puck(world: World) {
         body.applyLinearImpulse(direction.scl(SHOT_FORCE), Vector2.Zero, true)
     }
 
+    fun drop() {
+        body.fixtureList.forEach { it.isSensor = false }
+    }
+
     fun slowDown() {
         body.linearVelocity = body.linearVelocity.scl(0.03f)
+    }
+
+    fun reset() {
+        body.setTransform(startingPoint, 0f)
+        body.linearVelocity = Vector2.Zero
     }
 
     fun render(shapeRenderer: ShapeRenderer) {

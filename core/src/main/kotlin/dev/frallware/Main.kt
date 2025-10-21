@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import dev.frallware.HockeyRink.Companion.HEIGHT
 import dev.frallware.HockeyRink.Companion.WIDTH
+import java.time.Instant
 
 /**
  * TODO:
@@ -25,8 +26,11 @@ class Main : ApplicationAdapter() {
     val viewport: FitViewport = FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
     val world: World = World(Vector2.Zero, true)
     private lateinit var hockeyRink: HockeyRink
+    private lateinit var scoreBoard: ScoreBoard
 
-    val points = mutableMapOf(Side.Left to 0, Side.Right to 0)
+    val scores = mutableMapOf(Side.Left to 0, Side.Right to 0)
+
+    var goalResetAt: Instant? = null
 
     override fun create() {
         Box2D.init()
@@ -36,6 +40,7 @@ class Main : ApplicationAdapter() {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
         hockeyRink = HockeyRink(viewport, world)
+        scoreBoard = ScoreBoard(viewport, scores)
 
         world.setContactListener(object : ContactListener {
             override fun beginContact(contact: Contact) {
@@ -52,9 +57,9 @@ class Main : ApplicationAdapter() {
                 if (puck != null && goal != null) {
                     puck.slowDown()
                 }
-                if (puck != null && goalSensor != null) {
-                    points[goalSensor.side.opponent] = points[goalSensor.side.opponent]!! + 1
-                    println(points)
+                if (puck != null && goalSensor != null && goalResetAt == null) {
+                    scores[goalSensor.side.opponent] = scores[goalSensor.side.opponent]!! + 1
+                    goalResetAt = Instant.now().plusSeconds(3)
                 }
             }
 
@@ -80,6 +85,10 @@ class Main : ApplicationAdapter() {
     }
 
     override fun render() {
+        if (goalResetAt != null && goalResetAt!! < Instant.now()) {
+            hockeyRink.reset()
+            goalResetAt = null
+        }
         hockeyRink.update()
 
         // Step physics simulation
@@ -89,6 +98,7 @@ class Main : ApplicationAdapter() {
         viewport.apply()
 
         hockeyRink.render()
+        scoreBoard.render()
     }
 
     override fun dispose() {

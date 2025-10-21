@@ -17,6 +17,8 @@ class HockeyPlayer(world: World) {
         const val ACCELERATION_FORCE = 40f
         const val SHOT_FORCE = 20f
         const val MAX_VELOCITY = 20f
+
+        val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2 - 5f)
     }
 
     val body: Body
@@ -27,7 +29,7 @@ class HockeyPlayer(world: World) {
         // Create a dynamic body for the ball
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
-            position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2 - 5f) // Start at center of screen
+            position.set(startingPoint)
             angle = MathUtils.HALF_PI
             linearDamping = 0.5f // Adds friction/slowdown when no force applied
         }
@@ -46,6 +48,13 @@ class HockeyPlayer(world: World) {
             userData = this@HockeyPlayer
         }
         circleShape.dispose()
+    }
+
+    fun reset() {
+        body.setTransform(startingPoint, MathUtils.HALF_PI)
+        body.linearVelocity = Vector2.Zero
+        puck?.drop()
+        puck = null
     }
 
     fun takePuck(puck: Puck) {

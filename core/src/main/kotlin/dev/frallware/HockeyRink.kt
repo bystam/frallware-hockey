@@ -32,6 +32,11 @@ class HockeyRink(
     private val rinkCenter: Vector2 = body.worldCenter.cpy()
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
 
+    fun reset() {
+        player.reset()
+        puck.reset()
+    }
+
     fun update() {
         player.update()
     }
