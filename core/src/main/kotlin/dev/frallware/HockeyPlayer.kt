@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
-import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.World
 
 class HockeyPlayer(world: World) {
@@ -34,7 +33,6 @@ class HockeyPlayer(world: World) {
         }
 
         body = world.createBody(bodyDef)
-        body.userData = this
         body.isFixedRotation = true
 
         // Create circular shape for the ball
@@ -42,14 +40,11 @@ class HockeyPlayer(world: World) {
             radius = RADIUS
         }
 
-        val fixtureDef = FixtureDef().apply {
-            shape = circleShape
-            density = 1.0f
+        body.createFixture(circleShape, 1f).apply {
             restitution = 0.2f // Bounce
             friction = 0.6f
+            userData = this@HockeyPlayer
         }
-
-        body.createFixture(fixtureDef)
         circleShape.dispose()
     }
 

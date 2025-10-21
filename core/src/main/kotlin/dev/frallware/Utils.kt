@@ -10,7 +10,13 @@ fun Color.withAlpha(alpha: Float): Color = cpy().set(r, g, b, alpha)
 operator fun Vector2.plus(v: Vector2): Vector2 = cpy().add(v)
 
 enum class Side {
-    Left, Right
+    Left, Right;
+
+    val opponent: Side
+        get() = when (this) {
+            Left -> Right
+            Right -> Left
+        }
 }
 
 fun interpolateArc90Deg(p1: Vector2, p2: Vector2, segments: Int): Array<Vector2> {

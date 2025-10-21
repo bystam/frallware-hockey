@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
+import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
 
 class Goal(world: World, val side: Side) {
@@ -22,6 +23,8 @@ class Goal(world: World, val side: Side) {
 
     val body: Body
 
+    data class Sensor(val side: Side)
+
     init {
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.StaticBody
@@ -33,7 +36,6 @@ class Goal(world: World, val side: Side) {
         }
 
         body = world.createBody(bodyDef)
-        body.userData = this
 
         for (j in joints) {
             j.scl(3f)
@@ -44,6 +46,22 @@ class Goal(world: World, val side: Side) {
             for (joint in joints) {
                 joint.x = -joint.x
             }
+        }
+
+        // goals sensor
+        val floor = PolygonShape()
+        floor.set(
+            // scale down to make it not collide from outside the goal
+            arrayOf(
+                start.cpy().scl(0.95f),
+                topArcStart.cpy().scl(0.95f),
+                bottomStart.cpy().scl(0.95f),
+                end.cpy().scl(0.95f)
+            )
+        )
+        body.createFixture(floor, 0f).apply {
+            isSensor = true
+            userData = Sensor(side)
         }
 
         /*
@@ -57,12 +75,14 @@ class Goal(world: World, val side: Side) {
         chain += interpolateArc90Deg(bottomArcStart, bottomStart, 10)
         chain += end
 
-        val shape = ChainShape()
-        shape.createChain(chain.toTypedArray())
+        val cage = ChainShape()
+        cage.createChain(chain.toTypedArray())
 
-        body.createFixture(shape, 0f).apply {
+        // cage
+        body.createFixture(cage, 0f).apply {
             restitution = 0.0f
             friction = 0.5f
+            userData = this@Goal
         }
     }
 

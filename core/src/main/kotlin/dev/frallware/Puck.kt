@@ -26,7 +26,6 @@ class Puck(world: World) {
         }
 
         body = world.createBody(bodyDef)
-        body.userData = this
 
         // Create circular shape for the ball
         val circleShape = CircleShape().apply {
@@ -36,6 +35,7 @@ class Puck(world: World) {
         body.createFixture(circleShape, 1.0f).apply {
             restitution = 0.6f // Bounce
             friction = 0.0f
+            userData = this@Puck
         }
         circleShape.dispose()
     }
