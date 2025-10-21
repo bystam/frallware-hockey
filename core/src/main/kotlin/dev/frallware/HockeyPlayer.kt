@@ -36,21 +36,21 @@ class HockeyPlayer(world: World, val side: Side) {
             Side.Left -> {
                 startingPoint = Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2)
                 startingAngle = 0f
-                leftKey = Input.Keys.LEFT
-                rightKey = Input.Keys.RIGHT
-                forwardKey = Input.Keys.UP
-                backwardsKey = Input.Keys.DOWN
-                shootKey = Input.Keys.SPACE
-            }
-
-            Side.Right -> {
-                startingPoint = Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2)
-                startingAngle = MathUtils.PI
                 leftKey = Input.Keys.A
                 rightKey = Input.Keys.D
                 forwardKey = Input.Keys.W
                 backwardsKey = Input.Keys.S
                 shootKey = Input.Keys.SHIFT_LEFT
+            }
+
+            Side.Right -> {
+                startingPoint = Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2)
+                startingAngle = MathUtils.PI
+                leftKey = Input.Keys.LEFT
+                rightKey = Input.Keys.RIGHT
+                forwardKey = Input.Keys.UP
+                backwardsKey = Input.Keys.DOWN
+                shootKey = Input.Keys.SPACE
             }
         }
 
