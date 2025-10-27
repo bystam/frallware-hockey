@@ -24,11 +24,22 @@ class HockeyRink(
     }
 
     val body: Body = createRink()
-    val leftPlayer: HockeyPlayer = HockeyPlayer(world, Side.Left, KeyboardPlayerStrategy(Side.Left))
-    val rightPlayer: HockeyPlayer = HockeyPlayer(world, Side.Right, KeyboardPlayerStrategy(Side.Right))
     val puck: Puck = Puck(world)
     val leftGoal = Goal(world, Side.Left)
     val rightGoal = Goal(world, Side.Right)
+
+    val leftPlayer: HockeyPlayer = HockeyPlayer(
+        world = world,
+        side = Side.Left,
+        strategy = KeyboardPlayerStrategy(Side.Left),
+        stateMaker = { StateImpl(it, puck, this) },
+    )
+    val rightPlayer: HockeyPlayer = HockeyPlayer(
+        world = world,
+        side = Side.Right,
+        strategy = KeyboardPlayerStrategy(Side.Right),
+        stateMaker = { StateImpl(it, puck, this) },
+    )
 
     private val rinkCenter: Vector2 = body.worldCenter.cpy()
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()

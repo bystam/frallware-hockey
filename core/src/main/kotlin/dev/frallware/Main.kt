@@ -19,7 +19,9 @@ import java.time.Instant
 
 /**
  * TODO:
- * - Reset game upon goal
+ * - Fit more players
+ * - make camera move with puck
+ * - implement goalie
  */
 class Main : ApplicationAdapter() {
 

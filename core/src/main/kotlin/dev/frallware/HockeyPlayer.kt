@@ -8,14 +8,14 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
-import dev.frallware.api.GameState
-import dev.frallware.api.Player
 import dev.frallware.api.PlayerStrategy
-import dev.frallware.api.Point
-import dev.frallware.api.Vector
-import java.util.UUID
 
-class HockeyPlayer(world: World, val side: Side, val strategy: PlayerStrategy) {
+class HockeyPlayer(
+    world: World,
+    val side: Side,
+    val strategy: PlayerStrategy,
+    val stateMaker: (player: HockeyPlayer) -> StateImpl
+) {
     companion object {
         const val RADIUS = 1f
         const val SHOT_FORCE = 20f
@@ -27,7 +27,10 @@ class HockeyPlayer(world: World, val side: Side, val strategy: PlayerStrategy) {
 
     val body: Body
 
-    private var puck: Puck? = null
+    var puck: Puck? = null
+        private set
+
+    private val state: StateImpl by lazy(LazyThreadSafetyMode.NONE) { stateMaker(this) }
 
     init {
         when (side) {
@@ -87,7 +90,7 @@ class HockeyPlayer(world: World, val side: Side, val strategy: PlayerStrategy) {
     }
 
     fun update() {
-        val move = strategy.step(State())
+        val move = strategy.step(state)
         val angle = body.angle
 
         body.setTransform(body.position, angle + move.rotation)
@@ -138,29 +141,5 @@ class HockeyPlayer(world: World, val side: Side, val strategy: PlayerStrategy) {
             0.4f,
             20,
         )
-    }
-
-    inner class State() : GameState {
-        override val puck: dev.frallware.api.Puck get() = TODO()
-        override val me: Player = MePlayer()
-        override val friendlyGoalie: Player get() = TODO()
-        override val friendlyPlayers: List<Player> get() = TODO()
-        override val enemyGoalie: Player get() = TODO()
-        override val enemyPlayers: List<Player> get() = TODO()
-    }
-
-    inner class MePlayer : Player {
-        override val id: String = UUID.randomUUID().toString()
-        override val position: Point
-            get() {
-                val pos = body.worldCenter
-                return Point(pos.x, pos.y)
-            }
-        override val heading: Vector
-            get() {
-                val angle = body.angle
-                return Vector(MathUtils.cos(angle), MathUtils.sin(angle))
-            }
-        override val hasPuck: Boolean get() = puck != null
     }
 }
