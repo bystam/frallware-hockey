@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import dev.frallware.api.GameState
-import dev.frallware.api.PlayerMove
+import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
 import dev.frallware.api.Point
 
@@ -45,26 +45,23 @@ class KeyboardPlayerStrategy(val side: Side) : PlayerStrategy {
         }
     }
 
-    override fun step(state: GameState): PlayerMove {
-        val move = PlayerMove()
+    override fun step(state: GameState, operations: PlayerOperations) {
         val forward = Point.zero + state.me.heading
 
         if (Gdx.input.isKeyPressed(leftKey)) {
-            move.turn(0.05f)
+            operations.turn(0.05f)
         }
         if (Gdx.input.isKeyPressed(rightKey)) {
-            move.turn(-0.05f)
+            operations.turn(-0.05f)
         }
 
         if (Gdx.input.isKeyPressed(forwardKey)) {
-            move.move(forward, 40f)
+            operations.move(forward, 40f)
         } else if (Gdx.input.isKeyPressed(backwardsKey)) {
-            move.move(forward, -40f)
+            operations.move(forward, -40f)
         }
         if (Gdx.input.isKeyPressed(shootKey) && state.me.hasPuck) {
-            move.shoot(forward, 20f)
+            operations.shoot(forward, 20f)
         }
-
-        return move
     }
 }

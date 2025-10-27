@@ -8,7 +8,10 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
+import dev.frallware.api.Player
+import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
+import dev.frallware.api.Point
 
 class HockeyPlayer(
     world: World,
@@ -90,7 +93,8 @@ class HockeyPlayer(
     }
 
     fun update() {
-        val move = strategy.step(state)
+        val move = Move()
+        strategy.step(state, move)
         val angle = body.angle
 
         body.setTransform(body.position, angle + move.rotation)
@@ -141,5 +145,48 @@ class HockeyPlayer(
             0.4f,
             20,
         )
+    }
+
+    inner class Move : PlayerOperations {
+        var moveDestination: Point? = null
+            private set
+        var moveSpeed: Float = 0f
+            private set
+
+        var passDestination: Point? = null
+            private set
+        var passForce: Float = 0f
+            private set
+
+        var shotDestination: Point? = null
+            private set
+        var shotForce: Float = 0f
+            private set
+
+        var rotation: Float = 0f
+            private set
+
+        override fun move(destination: Point, speed: Float): Move {
+            this.moveDestination = destination
+            this.moveSpeed = speed
+            return this
+        }
+
+        override fun pass(player: Player, force: Float): Move {
+            this.passDestination = player.position
+            this.passForce = force
+            return this
+        }
+
+        override fun shoot(destination: Point, force: Float): Move {
+            this.shotDestination = destination
+            this.shotForce = force
+            return this
+        }
+
+        override fun turn(angle: Float): Move {
+            this.rotation += angle
+            return this
+        }
     }
 }
