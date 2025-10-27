@@ -48,8 +48,12 @@ class Puck(world: World) {
 
     fun shoot(angle: Float) {
         val direction = Vector2(1f, 0f).rotateRad(angle)
-        body.fixtureList.forEach { it.isSensor = false }
         body.applyLinearImpulse(direction.scl(SHOT_FORCE), Vector2.Zero, true)
+    }
+
+    fun shoot(destination: Vector2, force: Float) {
+        val direction = destination.cpy().nor()
+        body.applyLinearImpulse(direction.scl(force), Vector2.Zero, true)
     }
 
     fun slowDown() {

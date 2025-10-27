@@ -1,7 +1,5 @@
 package dev.frallware
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils
@@ -10,22 +8,22 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
+import dev.frallware.api.GameState
+import dev.frallware.api.Player
+import dev.frallware.api.PlayerStrategy
+import dev.frallware.api.Point
+import dev.frallware.api.Vector
+import java.util.UUID
 
-class HockeyPlayer(world: World, val side: Side) {
+class HockeyPlayer(world: World, val side: Side, val strategy: PlayerStrategy) {
     companion object {
         const val RADIUS = 1f
-        const val ACCELERATION_FORCE = 40f
         const val SHOT_FORCE = 20f
         const val MAX_VELOCITY = 20f
     }
 
     private val startingPoint: Vector2
     private val startingAngle: Float
-    private val leftKey: Int
-    private val rightKey: Int
-    private val forwardKey: Int
-    private val backwardsKey: Int
-    private val shootKey: Int
 
     val body: Body
 
@@ -36,21 +34,11 @@ class HockeyPlayer(world: World, val side: Side) {
             Side.Left -> {
                 startingPoint = Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2)
                 startingAngle = 0f
-                leftKey = Input.Keys.A
-                rightKey = Input.Keys.D
-                forwardKey = Input.Keys.W
-                backwardsKey = Input.Keys.S
-                shootKey = Input.Keys.SHIFT_LEFT
             }
 
             Side.Right -> {
                 startingPoint = Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2)
                 startingAngle = MathUtils.PI
-                leftKey = Input.Keys.LEFT
-                rightKey = Input.Keys.RIGHT
-                forwardKey = Input.Keys.UP
-                backwardsKey = Input.Keys.DOWN
-                shootKey = Input.Keys.SPACE
             }
         }
 
@@ -99,22 +87,17 @@ class HockeyPlayer(world: World, val side: Side) {
     }
 
     fun update() {
+        val move = strategy.step(State())
         val angle = body.angle
-        val forward = Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
 
-        if (Gdx.input.isKeyPressed(leftKey)) {
-            body.setTransform(body.position, angle + 0.05f)
+        body.setTransform(body.position, angle + move.rotation)
+
+        move.moveDestination?.let {
+            body.applyForceToCenter(Vector2(it.x, it.y).scl(move.moveSpeed), true)
         }
-        if (Gdx.input.isKeyPressed(rightKey)) {
-            body.setTransform(body.position, angle + -0.05f)
-        }
-        if (Gdx.input.isKeyPressed(forwardKey)) {
-            body.applyForceToCenter(forward.scl(ACCELERATION_FORCE), true)
-        } else if (Gdx.input.isKeyPressed(backwardsKey)) {
-            body.applyForceToCenter(forward.scl(-ACCELERATION_FORCE), true)
-        }
-        if (Gdx.input.isKeyPressed(shootKey)) {
-            puck?.shoot(body.angle)
+
+        move.shotDestination?.let {
+            puck?.shoot(Vector2(it.x, it.y), move.shotForce)
             dropPuck()
         }
 
@@ -155,5 +138,29 @@ class HockeyPlayer(world: World, val side: Side) {
             0.4f,
             20,
         )
+    }
+
+    inner class State() : GameState {
+        override val puck: dev.frallware.api.Puck get() = TODO()
+        override val me: Player = MePlayer()
+        override val friendlyGoalie: Player get() = TODO()
+        override val friendlyPlayers: List<Player> get() = TODO()
+        override val enemyGoalie: Player get() = TODO()
+        override val enemyPlayers: List<Player> get() = TODO()
+    }
+
+    inner class MePlayer : Player {
+        override val id: String = UUID.randomUUID().toString()
+        override val position: Point
+            get() {
+                val pos = body.worldCenter
+                return Point(pos.x, pos.y)
+            }
+        override val heading: Vector
+            get() {
+                val angle = body.angle
+                return Vector(MathUtils.cos(angle), MathUtils.sin(angle))
+            }
+        override val hasPuck: Boolean get() = puck != null
     }
 }

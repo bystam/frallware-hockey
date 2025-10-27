@@ -24,8 +24,8 @@ class HockeyRink(
     }
 
     val body: Body = createRink()
-    val leftPlayer: HockeyPlayer = HockeyPlayer(world, Side.Left)
-    val rightPlayer: HockeyPlayer = HockeyPlayer(world, Side.Right)
+    val leftPlayer: HockeyPlayer = HockeyPlayer(world, Side.Left, KeyboardPlayerStrategy(Side.Left))
+    val rightPlayer: HockeyPlayer = HockeyPlayer(world, Side.Right, KeyboardPlayerStrategy(Side.Right))
     val puck: Puck = Puck(world)
     val leftGoal = Goal(world, Side.Left)
     val rightGoal = Goal(world, Side.Right)
