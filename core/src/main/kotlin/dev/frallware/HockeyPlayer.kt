@@ -85,11 +85,16 @@ class HockeyPlayer(world: World, val side: Side) {
     }
 
     fun takePuck(puck: Puck) {
+        puck.holder?.dropPuck()
+        puck.holder = this
         this.puck = puck
         puck.body.fixtureList.forEach { it.isSensor = true }
     }
 
     fun dropPuck() {
+        if (puck?.holder == this) {
+            puck?.holder = null
+        }
         puck = null
     }
 
@@ -110,7 +115,7 @@ class HockeyPlayer(world: World, val side: Side) {
         }
         if (Gdx.input.isKeyPressed(shootKey)) {
             puck?.shoot(body.angle)
-            puck = null
+            dropPuck()
         }
 
         // Clamp velocity to max speed

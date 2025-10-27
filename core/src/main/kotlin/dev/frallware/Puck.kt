@@ -19,6 +19,8 @@ class Puck(world: World) {
 
     val body: Body
 
+    var holder: HockeyPlayer? = null
+
     private var contactCount: Int = 0
 
     init {
