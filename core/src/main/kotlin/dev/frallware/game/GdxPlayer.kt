@@ -85,8 +85,6 @@ class GdxPlayer(
         strategy.step(state, move)
         val angle = body.angle
 
-        body.setTransform(body.position, angle + move.rotation)
-
         move.moveDestination?.let { destination ->
             val position = body.worldCenter
             val facingDirection = Vector2(1f, 0f).rotateRad(angle)
@@ -164,9 +162,6 @@ class GdxPlayer(
         var shotForce: Float = 0f
             private set
 
-        var rotation: Float = 0f
-            private set
-
         override fun skate(destination: Point, speed: Float): Move {
             this.moveDestination = destination
             this.moveSpeed = speed
@@ -182,11 +177,6 @@ class GdxPlayer(
         override fun shoot(destination: Point, force: Float): Move {
             this.shotDestination = destination
             this.shotForce = force
-            return this
-        }
-
-        override fun turn(angle: Float): Move {
-            this.rotation += angle
             return this
         }
     }

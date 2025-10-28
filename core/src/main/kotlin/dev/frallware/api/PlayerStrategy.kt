@@ -20,5 +20,4 @@ interface PlayerOperations {
     fun skate(destination: Point, speed: Float): PlayerOperations
     fun pass(player: Player, force: Float): PlayerOperations
     fun shoot(destination: Point, force: Float): PlayerOperations
-    fun turn(angle: Float): PlayerOperations
 }
