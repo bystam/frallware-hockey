@@ -23,31 +23,8 @@ class GdxRink(
     }
 
     val body: Body = createRink()
-//    val puck: GdxPuck = GdxPuck(world)
-//    val leftGoal = GdxGoal(world, Side.Left)
-//    val rightGoal = GdxGoal(world, Side.Right)
-//
-//    val leftPlayer: GdxPlayer = GdxPlayer(
-//        world = world,
-//        side = Side.Left,
-//        strategy = KeyboardPlayerStrategy(Side.Left),
-//        stateMaker = { StateImpl(it, puck, this) },
-//    )
-//    val rightPlayer: GdxPlayer = GdxPlayer(
-//        world = world,
-//        side = Side.Right,
-//        strategy = KeyboardPlayerStrategy(Side.Right),
-//        stateMaker = { StateImpl(it, puck, this) },
-//    )
 
     private val rinkCenter: Vector2 = body.worldCenter.cpy()
-//    private val shapeRenderer: ShapeRenderer = ShapeRenderer()
-
-
-//    fun update() {
-//        leftPlayer.update()
-//        rightPlayer.update()
-//    }
 
     fun render(shapeRenderer: ShapeRenderer) {
 
@@ -64,18 +41,7 @@ class GdxRink(
         shapeRenderer.rectLine(tl, tr, 0.3f)
         shapeRenderer.rectLine(tr, br, 0.3f)
         shapeRenderer.rectLine(br, bl, 0.3f)
-
-//        puck.render(shapeRenderer)
-//        leftGoal.render(shapeRenderer)
-//        rightGoal.render(shapeRenderer)
-//        leftPlayer.render(shapeRenderer)
-//        rightPlayer.render(shapeRenderer)
     }
-
-//    fun dispose() {
-//        shapeRenderer.dispose()
-//        world.dispose()
-//    }
 
     private fun createRink(): Body {
         // Create a static body for the container at origin

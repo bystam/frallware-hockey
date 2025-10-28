@@ -2,6 +2,7 @@ package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -83,17 +84,31 @@ class GdxPlayer(
         val move = Move()
         strategy.step(state, move)
         val angle = body.angle
-        val position = body.worldCenter
 
         body.setTransform(body.position, angle + move.rotation)
 
-        move.moveDestination?.let {
-            val direction = Vector2(it.x - position.x, it.y - position.y).nor()
-            body.applyForceToCenter(direction.scl(move.moveSpeed), true)
+        move.moveDestination?.let { destination ->
+            val position = body.worldCenter
+            val facingDirection = Vector2(1f, 0f).rotateRad(angle)
+            val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
+
+            val angleToTarget = MathUtils.atan2(destinationDirection.y, destinationDirection.x)
+            val angleDiff = angleToTarget - angle
+            val angleDiff2 = ((angleDiff + MathUtils.PI) % (2 * MathUtils.PI) - MathUtils.PI)
+            if (angleDiff2 > 0.0001f) {
+                body.setTransform(body.position, angle + 0.03f)
+            }
+            if (angleDiff2 < -0.0001f) {
+                body.setTransform(body.position, angle - 0.03f)
+            }
+
+            body.applyForceToCenter(facingDirection.scl(move.moveSpeed), true)
         }
 
-        move.shotDestination?.let {
-            puck?.shoot(Vector2(it.x, it.y), move.shotForce)
+        move.shotDestination?.let { destination ->
+            val position = body.worldCenter
+            val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
+            puck?.shoot(destinationDirection, move.shotForce)
             dropPuck()
         }
 

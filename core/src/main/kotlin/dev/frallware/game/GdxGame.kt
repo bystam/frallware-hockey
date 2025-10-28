@@ -34,13 +34,24 @@ class GdxGame(
 
     var goalResetAt: Instant? = null
 
-    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(1).map { strategy ->
+    companion object {
+        val leftStartingPoints = listOf(
+            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 - 3f),
+            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 + 3f),
+        )
+        val rightStartingPoints = listOf(
+            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 - 3f),
+            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 + 3f),
+        )
+    }
+
+    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(2).mapIndexed { index, strategy ->
         GdxPlayer(
             world = world,
             isGoalie = false,
             strategy = strategy,
             color = leftTeam.color,
-            startingPoint = Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2),
+            startingPoint = leftStartingPoints[index],
             startingAngle = 0f,
             stateMaker = {
                 StateImpl(
@@ -57,13 +68,13 @@ class GdxGame(
         )
     }
 
-    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(1).map { strategy ->
+    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(2).mapIndexed { index, strategy ->
         GdxPlayer(
             world = world,
             isGoalie = false,
             strategy = strategy,
-            color = leftTeam.color,
-            startingPoint = Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2),
+            color = rightTeam.color,
+            startingPoint = rightStartingPoints[index],
             startingAngle = MathUtils.PI,
             stateMaker = {
                 StateImpl(
