@@ -8,6 +8,7 @@ import dev.frallware.api.GameState
 import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
 import dev.frallware.api.Point
+import dev.frallware.game.Side
 
 class KeyboardPlayerStrategy(val side: Side) : PlayerStrategy {
 

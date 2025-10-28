@@ -1,4 +1,4 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils

@@ -1,4 +1,4 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -8,16 +8,17 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
+import dev.frallware.Constants
 import dev.frallware.api.Player
 import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
 import dev.frallware.api.Point
 
-class HockeyPlayer(
+class GdxPlayer(
     world: World,
     val side: Side,
     val strategy: PlayerStrategy,
-    val stateMaker: (player: HockeyPlayer) -> StateImpl
+    val stateMaker: (player: GdxPlayer) -> StateImpl
 ) {
     companion object {
         const val RADIUS = 1f
@@ -30,7 +31,7 @@ class HockeyPlayer(
 
     val body: Body
 
-    var puck: Puck? = null
+    var puck: GdxPuck? = null
         private set
 
     private val state: StateImpl by lazy(LazyThreadSafetyMode.NONE) { stateMaker(this) }
@@ -67,7 +68,7 @@ class HockeyPlayer(
         body.createFixture(circleShape, 1f).apply {
             restitution = 0.2f // Bounce
             friction = 0.6f
-            userData = this@HockeyPlayer
+            userData = this@GdxPlayer
         }
         circleShape.dispose()
     }
@@ -78,7 +79,7 @@ class HockeyPlayer(
         dropPuck()
     }
 
-    fun takePuck(puck: Puck) {
+    fun takePuck(puck: GdxPuck) {
         puck.holder?.dropPuck()
         puck.holder = this
         this.puck = puck

@@ -13,8 +13,14 @@ import com.badlogic.gdx.physics.box2d.Manifold
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
-import dev.frallware.HockeyRink.Companion.HEIGHT
-import dev.frallware.HockeyRink.Companion.WIDTH
+import dev.frallware.game.GdxGoal
+import dev.frallware.game.GdxPlayer
+import dev.frallware.game.GdxPuck
+import dev.frallware.game.GdxRink
+import dev.frallware.game.GdxRink.Companion.HEIGHT
+import dev.frallware.game.GdxRink.Companion.WIDTH
+import dev.frallware.game.GdxScoreBoard
+import dev.frallware.game.Side
 import java.time.Instant
 
 /**
@@ -27,8 +33,8 @@ class Main : ApplicationAdapter() {
 
     val viewport: FitViewport = FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
     val world: World = World(Vector2.Zero, true)
-    private lateinit var hockeyRink: HockeyRink
-    private lateinit var scoreBoard: ScoreBoard
+    private lateinit var hockeyRink: GdxRink
+    private lateinit var scoreBoard: GdxScoreBoard
 
     val scores = mutableMapOf(Side.Left to 0, Side.Right to 0)
 
@@ -41,17 +47,17 @@ class Main : ApplicationAdapter() {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
-        hockeyRink = HockeyRink(viewport, world)
-        scoreBoard = ScoreBoard(viewport, scores)
+        hockeyRink = GdxRink(viewport, world)
+        scoreBoard = GdxScoreBoard(viewport, scores)
 
         world.setContactListener(object : ContactListener {
             override fun beginContact(contact: Contact) {
                 val aData = contact.fixtureA.userData
                 val bData = contact.fixtureB.userData
-                val puck = (aData as? Puck) ?: (bData as? Puck)
-                val player = (aData as? HockeyPlayer) ?: (bData as? HockeyPlayer)
-                val goal = (aData as? Goal) ?: (bData as? Goal)
-                val goalSensor = (aData as? Goal.Sensor) ?: (bData as? Goal.Sensor)
+                val puck = (aData as? GdxPuck) ?: (bData as? GdxPuck)
+                val player = (aData as? GdxPlayer) ?: (bData as? GdxPlayer)
+                val goal = (aData as? GdxGoal) ?: (bData as? GdxGoal)
+                val goalSensor = (aData as? GdxGoal.Sensor) ?: (bData as? GdxGoal.Sensor)
 
                 puck?.registerContact()
 
@@ -65,7 +71,7 @@ class Main : ApplicationAdapter() {
                     scores[goalSensor.side.opponent] = scores[goalSensor.side.opponent]!! + 1
                     goalResetAt = Instant.now().plusSeconds(3)
                 }
-                if (aData is HockeyPlayer && bData is HockeyPlayer) {
+                if (aData is GdxPlayer && bData is GdxPlayer) {
                     val speed = aData.body.linearVelocity.cpy().sub(bData.body.linearVelocity)
                     if (speed.len() > 5f) {
                         aData.dropPuck()
@@ -77,7 +83,7 @@ class Main : ApplicationAdapter() {
             override fun endContact(contact: Contact) {
                 val aData = contact.fixtureA.userData
                 val bData = contact.fixtureB.userData
-                val puck = (aData as? Puck) ?: (bData as? Puck)
+                val puck = (aData as? GdxPuck) ?: (bData as? GdxPuck)
 
                 puck?.deregisterContact()
             }

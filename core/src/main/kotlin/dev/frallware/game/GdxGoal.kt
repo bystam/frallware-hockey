@@ -1,4 +1,4 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -8,8 +8,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
+import dev.frallware.Constants
 
-class Goal(world: World, val side: Side) {
+class GdxGoal(world: World, val side: Side) {
 
     val start = Vector2(-0.6f, 1.0f)
     val topArcStart = Vector2(0.4f, 1.0f)
@@ -82,7 +83,7 @@ class Goal(world: World, val side: Side) {
         body.createFixture(cage, 0f).apply {
             restitution = 0.0f
             friction = 0.5f
-            userData = this@Goal
+            userData = this@GdxGoal
         }
     }
 

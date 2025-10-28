@@ -1,12 +1,13 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.Viewport
+import dev.frallware.Constants
 
-class ScoreBoard(
+class GdxScoreBoard(
     private val viewport: Viewport,
     private val scores: Map<Side, Int>
 ) {

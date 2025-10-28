@@ -1,4 +1,4 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.math.MathUtils
 import dev.frallware.api.GameState
@@ -9,9 +9,9 @@ import dev.frallware.api.Vector
 import java.util.UUID
 
 class StateImpl(
-    val player: HockeyPlayer,
-    val thePuck: dev.frallware.Puck,
-    val hockeyRink: HockeyRink,
+    val player: GdxPlayer,
+    val thePuck: GdxPuck,
+    val hockeyRink: GdxRink,
 ) : GameState {
     override val puck: PuckImpl = PuckImpl()
     override val me: PlayerImpl = PlayerImpl(player)
@@ -39,7 +39,7 @@ class StateImpl(
 
     }
 
-    class PlayerImpl(val player: HockeyPlayer) : Player {
+    class PlayerImpl(val player: GdxPlayer) : Player {
         override val id: String = UUID.randomUUID().toString()
         override val position: Point
             get() {

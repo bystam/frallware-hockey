@@ -1,4 +1,4 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -8,8 +8,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.viewport.FitViewport
+import dev.frallware.Constants
+import dev.frallware.KeyboardPlayerStrategy
 
-class HockeyRink(
+class GdxRink(
     val viewport: FitViewport,
     val world: World,
 ) {
@@ -24,17 +26,17 @@ class HockeyRink(
     }
 
     val body: Body = createRink()
-    val puck: Puck = Puck(world)
-    val leftGoal = Goal(world, Side.Left)
-    val rightGoal = Goal(world, Side.Right)
+    val puck: GdxPuck = GdxPuck(world)
+    val leftGoal = GdxGoal(world, Side.Left)
+    val rightGoal = GdxGoal(world, Side.Right)
 
-    val leftPlayer: HockeyPlayer = HockeyPlayer(
+    val leftPlayer: GdxPlayer = GdxPlayer(
         world = world,
         side = Side.Left,
         strategy = KeyboardPlayerStrategy(Side.Left),
         stateMaker = { StateImpl(it, puck, this) },
     )
-    val rightPlayer: HockeyPlayer = HockeyPlayer(
+    val rightPlayer: GdxPlayer = GdxPlayer(
         world = world,
         side = Side.Right,
         strategy = KeyboardPlayerStrategy(Side.Right),

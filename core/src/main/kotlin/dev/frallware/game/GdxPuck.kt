@@ -1,4 +1,4 @@
-package dev.frallware
+package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -7,9 +7,9 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
-import dev.frallware.HockeyPlayer.Companion.SHOT_FORCE
+import dev.frallware.Constants
 
-class Puck(world: World) {
+class GdxPuck(world: World) {
 
     companion object {
         const val RADIUS = 0.4f
@@ -19,7 +19,7 @@ class Puck(world: World) {
 
     val body: Body
 
-    var holder: HockeyPlayer? = null
+    var holder: GdxPlayer? = null
 
     private var contactCount: Int = 0
 
@@ -41,14 +41,14 @@ class Puck(world: World) {
         body.createFixture(circleShape, 1.0f).apply {
             restitution = 0.6f // Bounce
             friction = 0.0f
-            userData = this@Puck
+            userData = this@GdxPuck
         }
         circleShape.dispose()
     }
 
     fun shoot(angle: Float) {
         val direction = Vector2(1f, 0f).rotateRad(angle)
-        body.applyLinearImpulse(direction.scl(SHOT_FORCE), Vector2.Zero, true)
+        body.applyLinearImpulse(direction.scl(GdxPlayer.Companion.SHOT_FORCE), Vector2.Zero, true)
     }
 
     fun shoot(destination: Vector2, force: Float) {
