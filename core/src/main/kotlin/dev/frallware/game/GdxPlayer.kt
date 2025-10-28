@@ -56,6 +56,7 @@ class GdxPlayer(
             friction = 0.6f
             userData = this@GdxPlayer
         }
+
         circleShape.dispose()
     }
 

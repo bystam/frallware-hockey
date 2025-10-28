@@ -120,7 +120,7 @@ class GdxGame(
         // Step physics simulation
         world.step(1 / 60f, 6, 2)
 
-        ScreenUtils.clear(Color.BLACK)
+        ScreenUtils.clear(Color.WHITE)
         viewport.apply()
 
         shapeRenderer.projectionMatrix = viewport.camera.combined

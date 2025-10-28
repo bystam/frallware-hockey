@@ -15,47 +15,24 @@ class GdxRink(
     companion object {
         const val WIDTH = 60f
         const val HEIGHT = 30f
-
-        val bottomLeft = Vector2(-WIDTH / 2, -HEIGHT / 2)
-        val topLeft = Vector2(-WIDTH / 2, HEIGHT / 2)
-        val topRight = Vector2(WIDTH / 2, HEIGHT / 2)
-        val bottomRight = Vector2(WIDTH / 2, -HEIGHT / 2)
     }
 
-    val body: Body = createRink()
+    val body: Body = world.createBody(BodyDef().apply {
+        type = BodyDef.BodyType.StaticBody
+        position.set(Constants.worldCenter)
+    })
 
-    private val rinkCenter: Vector2 = body.worldCenter.cpy()
+    private val rect: RoundedRect = RoundedRect.create(WIDTH, HEIGHT, 3f, 20)
 
-    fun render(shapeRenderer: ShapeRenderer) {
-
-        val bl = rinkCenter + bottomLeft
-        val tl = rinkCenter + topLeft
-        val tr = rinkCenter + topRight
-        val br = rinkCenter + bottomRight
-
-        shapeRenderer.color = Color.WHITE.withAlpha(0.8f)
-        shapeRenderer.rect(bl.x, bl.y, WIDTH, HEIGHT)
-
-        shapeRenderer.color = Color.RED
-        shapeRenderer.rectLine(bl, tl, 0.3f)
-        shapeRenderer.rectLine(tl, tr, 0.3f)
-        shapeRenderer.rectLine(tr, br, 0.3f)
-        shapeRenderer.rectLine(br, bl, 0.3f)
+    private val absoluteEdgePoints: List<Vector2> by lazy(LazyThreadSafetyMode.NONE) {
+        val rinkCenter = body.worldCenter
+        rect.allPoints.map { rinkCenter + it }
     }
 
-    private fun createRink(): Body {
+    init {
         // Create a static body for the container at origin
-        val bodyDef = BodyDef().apply {
-            type = BodyDef.BodyType.StaticBody
-            position.set(Constants.worldCenter)
-        }
-
-        val body = world.createBody(bodyDef)
-
         val shape = ChainShape()
-        shape.createLoop(
-            arrayOf(bottomLeft, topLeft, topRight, bottomRight)
-        )
+        shape.createLoop(rect.allPoints.toTypedArray())
 
         body.createFixture(shape, 0f).apply {
             restitution = 0.2f // No bounce - absorbs impact
@@ -63,7 +40,13 @@ class GdxRink(
         }
 
         shape.dispose()
+    }
 
-        return body
+    fun render(shapeRenderer: ShapeRenderer) {
+        shapeRenderer.color = Color.RED
+        for ((from, to) in absoluteEdgePoints.windowed(2)) {
+            shapeRenderer.rectLine(from, to, 0.3f)
+        }
+        shapeRenderer.rectLine(absoluteEdgePoints.last(), absoluteEdgePoints.first(), 0.3f)
     }
 }

@@ -3,7 +3,7 @@ package dev.frallware.game
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-
+import kotlin.math.min
 
 fun Color.withAlpha(alpha: Float): Color = cpy().set(r, g, b, alpha)
 
@@ -19,21 +19,57 @@ enum class Side {
         }
 }
 
-fun interpolateArc90Deg(p1: Vector2, p2: Vector2, segments: Int): Array<Vector2> {
-    val result = Array<Vector2>(segments + 1) { Vector2.Zero }
+class RoundedRect(
+    val topRightPoints: List<Vector2>,
+    val topLeftPoints: List<Vector2>,
+    val bottomLeftPoints: List<Vector2>,
+    val bottomRightPoints: List<Vector2>,
+) {
 
-    val center = Vector2(p1.x, p2.y)
+    val allPoints = topRightPoints + topLeftPoints + bottomLeftPoints + bottomRightPoints
 
-    val radius = center.dst(p1)
-    val startAngle = MathUtils.atan2(p1.y - center.y, p1.x - center.x)
-    val endAngle = MathUtils.atan2(p2.y - center.y, p2.x - center.x)
+    companion object {
+        fun create(width: Float, height: Float, radius: Float, segmentsPerCorner: Int): RoundedRect {
 
-    for (i in 0..segments) {
-        val angle = MathUtils.lerp(startAngle, endAngle, i.toFloat() / segments)
-        result[i] = Vector2(
-            center.x + MathUtils.cos(angle) * radius,
-            center.y + MathUtils.sin(angle) * radius
-        )
+            val hw = width / 2f
+            val hh = height / 2f
+            val r = min(radius, min(hw, hh)) // clamp radius so corners don't overlap
+
+            fun createArc(center: Vector2, startAngle: Float) = buildList {
+                for (j in 0..segmentsPerCorner) {
+                    val angle = startAngle + (j / segmentsPerCorner.toFloat()) * (MathUtils.PI / 2f)
+                    val x = center.x + MathUtils.cos(angle) * r
+                    val y = center.y + MathUtils.sin(angle) * r
+                    add(Vector2(x, y))
+                }
+            }
+
+            val topRightPoints = createArc(
+                center = Vector2(hw - r, hh - r),  // top-right
+                startAngle = 0f,
+            )
+
+            val topLeftPoints = createArc(
+                center = Vector2(-hw + r, hh - r),  // top-left
+                startAngle = MathUtils.PI / 2f,
+            )
+
+            val bottomLeftPoints = createArc(
+                center = Vector2(-hw + r, -hh + r),  // bottom-left
+                startAngle = MathUtils.PI,
+            )
+
+            val bottomRightPoints = createArc(
+                center = Vector2(hw - r, -hh + r), // bottom-right
+                startAngle = 3f * MathUtils.PI / 2f,
+            )
+
+            return RoundedRect(
+                topLeftPoints = topLeftPoints,
+                topRightPoints = topRightPoints,
+                bottomRightPoints = bottomRightPoints,
+                bottomLeftPoints = bottomLeftPoints,
+            )
+        }
     }
-    return result
 }
