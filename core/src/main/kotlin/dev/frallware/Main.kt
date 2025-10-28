@@ -9,8 +9,7 @@ import com.badlogic.gdx.physics.box2d.Box2D
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.viewport.FitViewport
 import dev.frallware.game.GdxGame
-import dev.frallware.game.GdxRink.Companion.HEIGHT
-import dev.frallware.game.GdxRink.Companion.WIDTH
+import dev.frallware.game.GdxRink
 import dev.frallware.teams.StupidTeam
 
 /**
@@ -55,7 +54,7 @@ class Main : ApplicationAdapter() {
 }
 
 object Constants {
-    const val WORLD_WIDTH: Float = WIDTH + 10
-    const val WORLD_HEIGHT: Float = HEIGHT + 10
+    const val WORLD_WIDTH: Float = GdxRink.WIDTH + 10
+    const val WORLD_HEIGHT: Float = GdxRink.HEIGHT + 10
     val worldCenter = Vector2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
 }
