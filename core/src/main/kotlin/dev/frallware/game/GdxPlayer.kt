@@ -2,13 +2,11 @@ package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
-import dev.frallware.Constants
 import dev.frallware.api.Player
 import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
@@ -16,8 +14,11 @@ import dev.frallware.api.Point
 
 class GdxPlayer(
     world: World,
-    val side: Side,
+    val isGoalie: Boolean,
     val strategy: PlayerStrategy,
+    val color: Color,
+    val startingPoint: Vector2,
+    val startingAngle: Float,
     val stateMaker: (player: GdxPlayer) -> StateImpl
 ) {
     companion object {
@@ -25,9 +26,6 @@ class GdxPlayer(
         const val SHOT_FORCE = 20f
         const val MAX_VELOCITY = 20f
     }
-
-    private val startingPoint: Vector2
-    private val startingAngle: Float
 
     val body: Body
 
@@ -37,18 +35,6 @@ class GdxPlayer(
     private val state: StateImpl by lazy(LazyThreadSafetyMode.NONE) { stateMaker(this) }
 
     init {
-        when (side) {
-            Side.Left -> {
-                startingPoint = Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2)
-                startingAngle = 0f
-            }
-
-            Side.Right -> {
-                startingPoint = Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2)
-                startingAngle = MathUtils.PI
-            }
-        }
-
         // Create a dynamic body for the ball
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.DynamicBody
@@ -97,11 +83,13 @@ class GdxPlayer(
         val move = Move()
         strategy.step(state, move)
         val angle = body.angle
+        val position = body.worldCenter
 
         body.setTransform(body.position, angle + move.rotation)
 
         move.moveDestination?.let {
-            body.applyForceToCenter(Vector2(it.x, it.y).scl(move.moveSpeed), true)
+            val direction = Vector2(it.x - position.x, it.y - position.y).nor()
+            body.applyForceToCenter(direction.scl(move.moveSpeed), true)
         }
 
         move.shotDestination?.let {
@@ -126,10 +114,7 @@ class GdxPlayer(
     }
 
     fun render(shapeRenderer: ShapeRenderer) {
-        shapeRenderer.color = when (side) {
-            Side.Left -> Color.BLUE
-            Side.Right -> Color.MAROON
-        }
+        shapeRenderer.color = color
         shapeRenderer.circle(
             body.position.x,
             body.position.y,
@@ -167,7 +152,7 @@ class GdxPlayer(
         var rotation: Float = 0f
             private set
 
-        override fun move(destination: Point, speed: Float): Move {
+        override fun skate(destination: Point, speed: Float): Move {
             this.moveDestination = destination
             this.moveSpeed = speed
             return this

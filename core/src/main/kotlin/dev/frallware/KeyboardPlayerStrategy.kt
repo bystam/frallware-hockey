@@ -57,9 +57,9 @@ class KeyboardPlayerStrategy(val side: Side) : PlayerStrategy {
         }
 
         if (Gdx.input.isKeyPressed(forwardKey)) {
-            operations.move(forward, 40f)
+            operations.skate(forward, 40f)
         } else if (Gdx.input.isKeyPressed(backwardsKey)) {
-            operations.move(forward, -40f)
+            operations.skate(forward, -40f)
         }
         if (Gdx.input.isKeyPressed(shootKey) && state.me.hasPuck) {
             operations.shoot(forward, 20f)

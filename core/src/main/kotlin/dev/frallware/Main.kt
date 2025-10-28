@@ -2,26 +2,16 @@ package dev.frallware
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
-import com.badlogic.gdx.physics.box2d.Contact
-import com.badlogic.gdx.physics.box2d.ContactImpulse
-import com.badlogic.gdx.physics.box2d.ContactListener
-import com.badlogic.gdx.physics.box2d.Manifold
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
-import dev.frallware.game.GdxGoal
-import dev.frallware.game.GdxPlayer
-import dev.frallware.game.GdxPuck
-import dev.frallware.game.GdxRink
+import dev.frallware.game.GdxGame
 import dev.frallware.game.GdxRink.Companion.HEIGHT
 import dev.frallware.game.GdxRink.Companion.WIDTH
-import dev.frallware.game.GdxScoreBoard
-import dev.frallware.game.Side
-import java.time.Instant
+import dev.frallware.teams.NoopTeam
+import dev.frallware.teams.StupidTeam
 
 /**
  * TODO:
@@ -33,12 +23,8 @@ class Main : ApplicationAdapter() {
 
     val viewport: FitViewport = FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
     val world: World = World(Vector2.Zero, true)
-    private lateinit var hockeyRink: GdxRink
-    private lateinit var scoreBoard: GdxScoreBoard
 
-    val scores = mutableMapOf(Side.Left to 0, Side.Right to 0)
-
-    var goalResetAt: Instant? = null
+    private lateinit var game: GdxGame
 
     override fun create() {
         Box2D.init()
@@ -47,59 +33,7 @@ class Main : ApplicationAdapter() {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
-        hockeyRink = GdxRink(viewport, world)
-        scoreBoard = GdxScoreBoard(viewport, scores)
-
-        world.setContactListener(object : ContactListener {
-            override fun beginContact(contact: Contact) {
-                val aData = contact.fixtureA.userData
-                val bData = contact.fixtureB.userData
-                val puck = (aData as? GdxPuck) ?: (bData as? GdxPuck)
-                val player = (aData as? GdxPlayer) ?: (bData as? GdxPlayer)
-                val goal = (aData as? GdxGoal) ?: (bData as? GdxGoal)
-                val goalSensor = (aData as? GdxGoal.Sensor) ?: (bData as? GdxGoal.Sensor)
-
-                puck?.registerContact()
-
-                if (puck != null && player != null) {
-                    player.takePuck(puck)
-                }
-                if (puck != null && goal != null) {
-                    puck.slowDown()
-                }
-                if (puck != null && goalSensor != null && goalResetAt == null) {
-                    scores[goalSensor.side.opponent] = scores[goalSensor.side.opponent]!! + 1
-                    goalResetAt = Instant.now().plusSeconds(3)
-                }
-                if (aData is GdxPlayer && bData is GdxPlayer) {
-                    val speed = aData.body.linearVelocity.cpy().sub(bData.body.linearVelocity)
-                    if (speed.len() > 5f) {
-                        aData.dropPuck()
-                        bData.dropPuck()
-                    }
-                }
-            }
-
-            override fun endContact(contact: Contact) {
-                val aData = contact.fixtureA.userData
-                val bData = contact.fixtureB.userData
-                val puck = (aData as? GdxPuck) ?: (bData as? GdxPuck)
-
-                puck?.deregisterContact()
-            }
-
-            override fun preSolve(
-                contact: Contact,
-                oldManifold: Manifold
-            ) {
-            }
-
-            override fun postSolve(
-                contact: Contact,
-                impulse: ContactImpulse
-            ) {
-            }
-        })
+        game = GdxGame(world, viewport, StupidTeam(), NoopTeam())
     }
 
     override fun resize(width: Int, height: Int) {
@@ -107,24 +41,11 @@ class Main : ApplicationAdapter() {
     }
 
     override fun render() {
-        if (goalResetAt != null && goalResetAt!! < Instant.now()) {
-            hockeyRink.reset()
-            goalResetAt = null
-        }
-        hockeyRink.update()
-
-        // Step physics simulation
-        world.step(1 / 60f, 6, 2)
-
-        ScreenUtils.clear(Color.BLACK)
-        viewport.apply()
-
-        hockeyRink.render()
-        scoreBoard.render()
+        game.render()
     }
 
     override fun dispose() {
-        hockeyRink.dispose()
+        game.dispose()
     }
 }
 

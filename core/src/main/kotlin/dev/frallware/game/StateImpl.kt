@@ -1,30 +1,33 @@
 package dev.frallware.game
 
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
 import dev.frallware.api.GameState
 import dev.frallware.api.Player
 import dev.frallware.api.Point
 import dev.frallware.api.Puck
 import dev.frallware.api.Vector
-import java.util.UUID
 
 class StateImpl(
     val player: GdxPlayer,
     val thePuck: GdxPuck,
-    val hockeyRink: GdxRink,
+    friendlyGoalPosition: Vector2,
+    friendlyPlayers: List<GdxPlayer>,
+    friendlyGoalie: GdxPlayer,
+    enemyGoalPosition: Vector2,
+    enemyPlayers: List<GdxPlayer>,
+    enemyGoalie: GdxPlayer,
 ) : GameState {
     override val puck: PuckImpl = PuckImpl()
     override val me: PlayerImpl = PlayerImpl(player)
-    override val friendlyGoalie: PlayerImpl
-        get() = TODO("Not yet implemented")
-    override val friendlyPlayers: List<PlayerImpl> = listOf(me)
-    override val enemyGoalie: PlayerImpl
-        get() = TODO("Not yet implemented")
-    override val enemyPlayers: List<PlayerImpl> = listOf(hockeyRink.leftPlayer, hockeyRink.rightPlayer)
-        .filter { it !== player }
-        .map { PlayerImpl(it) }
+    override val friendlyGoalPosition: Point = Point(friendlyGoalPosition.x, friendlyGoalPosition.y)
+    override val friendlyGoalie: PlayerImpl = PlayerImpl(friendlyGoalie)
+    override val friendlyPlayers: List<PlayerImpl> = friendlyPlayers.map { PlayerImpl(it) }
+    override val enemyGoalPosition: Point = Point(enemyGoalPosition.x, enemyGoalPosition.y)
+    override val enemyGoalie: PlayerImpl = PlayerImpl(enemyGoalie)
+    override val enemyPlayers: List<PlayerImpl> = enemyPlayers.map { PlayerImpl(it) }
 
-    private val allPlayers = friendlyPlayers + enemyPlayers
+    private val allPlayers = this.friendlyPlayers + this.enemyPlayers
 
     inner class PuckImpl : Puck {
         override val holder: Player?
@@ -40,7 +43,6 @@ class StateImpl(
     }
 
     class PlayerImpl(val player: GdxPlayer) : Player {
-        override val id: String = UUID.randomUUID().toString()
         override val position: Point
             get() {
                 val pos = player.body.worldCenter

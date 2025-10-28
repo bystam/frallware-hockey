@@ -5,15 +5,16 @@ interface GameState {
 
     val me: Player
 
+    val friendlyGoalPosition: Point
     val friendlyGoalie: Player
     val friendlyPlayers: List<Player>
 
+    val enemyGoalPosition: Point
     val enemyGoalie: Player
     val enemyPlayers: List<Player>
 }
 
 interface Player {
-    val id: String
     val position: Point
     val heading: Vector
 
