@@ -2,7 +2,6 @@ package dev.frallware.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -90,13 +89,15 @@ class GdxPlayer(
             val facingDirection = Vector2(1f, 0f).rotateRad(angle)
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
 
-            val angleToTarget = MathUtils.atan2(destinationDirection.y, destinationDirection.x)
-            val angleDiff = angleToTarget - angle
-            val angleDiff2 = ((angleDiff + MathUtils.PI) % (2 * MathUtils.PI) - MathUtils.PI)
-            if (angleDiff2 > 0.0001f) {
+            // https://stackoverflow.com/a/3461533
+            val a = Vector2.Zero
+            val b = facingDirection
+            val c = destinationDirection
+            val cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+            if (cross > 0.01) { // isLeft
                 body.setTransform(body.position, angle + 0.03f)
             }
-            if (angleDiff2 < -0.0001f) {
+            if (cross < -0.01) { // isRight
                 body.setTransform(body.position, angle - 0.03f)
             }
 
