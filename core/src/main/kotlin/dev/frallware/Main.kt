@@ -17,6 +17,10 @@ import dev.frallware.teams.StupidTeam
  * - Fit more players
  * - make camera move with puck
  * - implement goalie
+ * - Make puck not able to travel through things
+ * - Draw rink properly
+ * - Add names to players
+ *
  */
 class Main : ApplicationAdapter() {
 

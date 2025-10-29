@@ -23,8 +23,7 @@ class GdxPlayer(
 ) {
     companion object {
         const val RADIUS = 1f
-        const val SHOT_FORCE = 20f
-        const val MAX_VELOCITY = 20f
+        const val MAX_VELOCITY = 30f
     }
 
     val body: Body

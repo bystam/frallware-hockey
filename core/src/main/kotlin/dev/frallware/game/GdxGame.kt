@@ -1,5 +1,6 @@
 package dev.frallware.game
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils
@@ -22,6 +23,19 @@ class GdxGame(
     private val rightTeam: HockeyTeam,
 ) {
 
+    companion object {
+        val leftStartingPoints = listOf(
+            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 - 3f),
+            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 + 3f),
+        )
+        val rightStartingPoints = listOf(
+            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 - 3f),
+            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 + 3f),
+        )
+
+        const val FPS = 1f / 60
+    }
+
     private val scores = mutableMapOf(Side.Left to 0, Side.Right to 0)
 
     private val hockeyRink: GdxRink = GdxRink(world)
@@ -32,18 +46,9 @@ class GdxGame(
 
     private val shapeRenderer: ShapeRenderer = ShapeRenderer()
 
-    var goalResetAt: Instant? = null
+    private var fpsAcc: Float = 0f
 
-    companion object {
-        val leftStartingPoints = listOf(
-            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 - 3f),
-            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 + 3f),
-        )
-        val rightStartingPoints = listOf(
-            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 - 3f),
-            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 + 3f),
-        )
-    }
+    var goalResetAt: Instant? = null
 
     private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(2).mapIndexed { index, strategy ->
         GdxPlayer(
@@ -117,8 +122,11 @@ class GdxGame(
             player.update()
         }
 
-        // Step physics simulation
-        world.step(1 / 60f, 6, 2)
+        fpsAcc += Gdx.graphics.deltaTime
+        while (fpsAcc > FPS) {
+            world.step(FPS, 6, 2)
+            fpsAcc -= FPS
+        }
 
         ScreenUtils.clear(Color.WHITE)
         viewport.apply()

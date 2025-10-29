@@ -16,12 +16,12 @@ class StupidTeam(override val color: Color) : HockeyTeam {
     class Player : PlayerStrategy {
         override val name: String = "StupidPlayer"
 
-        private val speed = Random.nextDouble(1.0, 25.0).toFloat()
+        private val speed = Random.nextDouble(5.0, 50.0).toFloat()
 
         override fun step(state: GameState, operations: PlayerOperations) {
             if (state.me.hasPuck) {
                 if (Random.nextInt(100) == 0) {
-                    operations.shoot(state.enemyGoalPosition, 20f)
+                    operations.shoot(state.enemyGoalPosition, 40f)
                 }
                 operations.skate(state.enemyGoalPosition, speed)
             } else {

@@ -46,11 +46,6 @@ class GdxPuck(world: World) {
         circleShape.dispose()
     }
 
-    fun shoot(angle: Float) {
-        val direction = Vector2(1f, 0f).rotateRad(angle)
-        body.applyLinearImpulse(direction.scl(GdxPlayer.Companion.SHOT_FORCE), Vector2.Zero, true)
-    }
-
     fun shoot(destination: Vector2, force: Float) {
         val direction = destination.cpy().nor()
         body.applyLinearImpulse(direction.scl(force), Vector2.Zero, true)
