@@ -23,7 +23,7 @@ class GdxPlayer(
 ) {
     companion object {
         const val RADIUS = 1f
-        const val MAX_VELOCITY = 30f
+        const val MAX_VELOCITY = 40f
     }
 
     val body: Body
@@ -95,10 +95,10 @@ class GdxPlayer(
             val c = destinationDirection
             val cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
             if (cross > 0.01) { // isLeft
-                body.setTransform(body.position, angle + 0.03f)
+                body.setTransform(body.position, angle + 0.06f)
             }
             if (cross < -0.01) { // isRight
-                body.setTransform(body.position, angle - 0.03f)
+                body.setTransform(body.position, angle - 0.06f)
             }
 
             body.applyForceToCenter(facingDirection.scl(move.moveSpeed), true)
