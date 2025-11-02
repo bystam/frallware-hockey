@@ -1,6 +1,8 @@
 package dev.frallware.game
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import kotlin.math.min
@@ -71,5 +73,27 @@ class RoundedRect(
                 bottomLeftPoints = bottomLeftPoints,
             )
         }
+    }
+}
+
+class TimedInterpolation(
+    val fromValue: Float,
+    val toValue: Float,
+    val duration: Float,
+    val interpolation: Interpolation,
+) {
+    private var elapsed: Float = 0f
+
+    fun next(): Float {
+        elapsed = (elapsed + Gdx.graphics.deltaTime).coerceAtMost(duration)
+        val t = elapsed / duration
+
+        // Smooth ease-in/ease-out
+        val easedT = interpolation.apply(t)
+        return MathUtils.lerp(fromValue, toValue, easedT)
+    }
+
+    fun reset() {
+        elapsed = 0f
     }
 }

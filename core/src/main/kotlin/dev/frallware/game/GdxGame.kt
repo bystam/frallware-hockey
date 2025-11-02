@@ -2,7 +2,9 @@ package dev.frallware.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Contact
@@ -14,6 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import dev.frallware.Constants
 import dev.frallware.api.HockeyTeam
+import java.time.Duration
 import java.time.Instant
 
 class GdxGame(
@@ -48,7 +51,14 @@ class GdxGame(
 
     private var fpsAcc: Float = 0f
 
-    var goalResetAt: Instant? = null
+    private var goalResetAt: Instant? = null
+    private var gameStartAt: Instant = Instant.now() + Duration.ofSeconds(2)
+    private val zoomAnimation: TimedInterpolation = TimedInterpolation(
+        fromValue = 0.6f,
+        toValue = 1f,
+        duration = 2f,
+        interpolation = Interpolation.sine,
+    )
 
     private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(2).mapIndexed { index, strategy ->
         GdxPlayer(
@@ -114,12 +124,17 @@ class GdxGame(
         if (goalResetAt != null && goalResetAt!! < Instant.now()) {
             reset()
             goalResetAt = null
+            zoomAnimation.reset()
+            gameStartAt = Instant.now() + Duration.ofSeconds(2)
         }
-        for (player in leftPlayers) {
-            player.update()
-        }
-        for (player in rightPlayers) {
-            player.update()
+
+        if (gameStartAt < Instant.now()) {
+            for (player in leftPlayers) {
+                player.update()
+            }
+            for (player in rightPlayers) {
+                player.update()
+            }
         }
 
         fpsAcc += Gdx.graphics.deltaTime
@@ -127,6 +142,11 @@ class GdxGame(
             world.step(FPS, 6, 2)
             fpsAcc -= FPS
         }
+
+        val puckPos = puck.body.worldCenter
+        val camera = viewport.camera as OrthographicCamera
+        camera.position.set(puckPos.x, puckPos.y, 0f)
+        camera.zoom = zoomAnimation.next()
 
         ScreenUtils.clear(Color.WHITE)
         viewport.apply()
