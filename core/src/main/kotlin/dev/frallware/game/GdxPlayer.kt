@@ -22,8 +22,8 @@ class GdxPlayer(
     val stateMaker: (player: GdxPlayer) -> StateImpl
 ) {
     companion object {
-        const val RADIUS = 1f
-        const val MAX_VELOCITY = 40f
+        const val RADIUS = 0.6f
+        const val MAX_VELOCITY = 30f
     }
 
     val body: Body
@@ -136,13 +136,13 @@ class GdxPlayer(
             20
         )
 
-        val headOffset = Vector2(0.4f, 0f).rotateRad(body.angle)
+        val headOffset = Vector2(0.2f, 0f).rotateRad(body.angle)
 
         shapeRenderer.color = Color.GREEN
         shapeRenderer.circle(
             body.position.x + headOffset.x,
             body.position.y + headOffset.y,
-            0.4f,
+            0.25f,
             20,
         )
     }

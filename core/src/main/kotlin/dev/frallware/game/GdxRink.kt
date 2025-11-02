@@ -13,8 +13,8 @@ class GdxRink(
     val world: World,
 ) {
     companion object {
-        const val WIDTH = 60f
-        const val HEIGHT = 30f
+        const val WIDTH = 100f
+        const val HEIGHT = 50f
     }
 
     val body: Body = world.createBody(BodyDef().apply {

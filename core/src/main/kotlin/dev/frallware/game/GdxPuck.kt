@@ -12,7 +12,7 @@ import dev.frallware.Constants
 class GdxPuck(world: World) {
 
     companion object {
-        const val RADIUS = 0.4f
+        const val RADIUS = 0.2f
 
         val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2)
     }

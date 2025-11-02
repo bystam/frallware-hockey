@@ -11,6 +11,10 @@ import dev.frallware.Constants
 
 class GdxGoal(world: World, val side: Side) {
 
+    companion object {
+        const val GOAL_OFFSET: Float = 0.2f
+    }
+
     val cageRect = RoundedRect.create(4f, 5f, 1.2f, 10)
 
     val cagePoints: List<Vector2> = when (side) {
@@ -38,8 +42,8 @@ class GdxGoal(world: World, val side: Side) {
             type = BodyDef.BodyType.StaticBody
             val yPos = Constants.WORLD_HEIGHT / 2
             when (side) {
-                Side.Left -> position.set(15f, yPos)
-                Side.Right -> position.set(Constants.WORLD_WIDTH - 15f, yPos)
+                Side.Left -> position.set(GOAL_OFFSET * Constants.WORLD_WIDTH, yPos)
+                Side.Right -> position.set((1f - GOAL_OFFSET) * Constants.WORLD_WIDTH, yPos)
             }
         }
 

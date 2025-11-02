@@ -30,10 +30,14 @@ class GdxGame(
         val leftStartingPoints = listOf(
             Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 - 3f),
             Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 + 3f),
+            Vector2(Constants.WORLD_WIDTH / 2 - 12f, Constants.WORLD_HEIGHT / 2 - 5f),
+            Vector2(Constants.WORLD_WIDTH / 2 - 12f, Constants.WORLD_HEIGHT / 2 + 5f),
         )
         val rightStartingPoints = listOf(
             Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 - 3f),
             Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 + 3f),
+            Vector2(Constants.WORLD_WIDTH / 2 + 12f, Constants.WORLD_HEIGHT / 2 - 5f),
+            Vector2(Constants.WORLD_WIDTH / 2 + 12f, Constants.WORLD_HEIGHT / 2 + 5f),
         )
 
         const val FPS = 1f / 60
@@ -54,13 +58,13 @@ class GdxGame(
     private var goalResetAt: Instant? = null
     private var gameStartAt: Instant = Instant.now() + Duration.ofSeconds(2)
     private val zoomAnimation: TimedInterpolation = TimedInterpolation(
-        fromValue = 0.6f,
-        toValue = 1f,
+        fromValue = 0.4f,
+        toValue = 0.7f,
         duration = 2f,
         interpolation = Interpolation.sine,
     )
 
-    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(2).mapIndexed { index, strategy ->
+    private val leftPlayers: List<GdxPlayer> = leftTeam.players.mapIndexed { index, strategy ->
         GdxPlayer(
             world = world,
             isGoalie = false,
@@ -83,7 +87,7 @@ class GdxGame(
         )
     }
 
-    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(2).mapIndexed { index, strategy ->
+    private val rightPlayers: List<GdxPlayer> = rightTeam.players.mapIndexed { index, strategy ->
         GdxPlayer(
             world = world,
             isGoalie = false,
