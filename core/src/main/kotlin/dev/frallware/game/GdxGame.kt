@@ -188,8 +188,6 @@ class GdxGame(
             val goal = (aData as? GdxGoal) ?: (bData as? GdxGoal)
             val goalSensor = (aData as? GdxGoal.Sensor) ?: (bData as? GdxGoal.Sensor)
 
-            puck?.registerContact()
-
             if (puck != null && player != null) {
                 player.takePuck(puck)
             }
@@ -210,11 +208,6 @@ class GdxGame(
         }
 
         override fun endContact(contact: Contact) {
-            val aData = contact.fixtureA.userData
-            val bData = contact.fixtureB.userData
-            val puck = (aData as? GdxPuck) ?: (bData as? GdxPuck)
-
-            puck?.deregisterContact()
         }
 
         override fun preSolve(

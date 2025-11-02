@@ -24,11 +24,11 @@ class GdxPlayer(
 ) {
     companion object {
         const val RADIUS = 0.6f
-        const val MAX_VELOCITY = 30f
+        const val MAX_VELOCITY = 20f
 
-        const val MAX_ACCELERATION = 20f
-        const val MAX_SHOT_FORCE = 20f
-        const val MAX_PASS_FORCE = 15f
+        const val MAX_ACCELERATION = 10f
+        const val MAX_SHOT_FORCE = 10f
+        const val MAX_PASS_FORCE = 5f
     }
 
     val body: Body
@@ -74,7 +74,6 @@ class GdxPlayer(
         puck.holder?.dropPuck()
         puck.holder = this
         this.puck = puck
-        puck.body.fixtureList.forEach { it.isSensor = true }
     }
 
     fun dropPuck() {
@@ -114,7 +113,8 @@ class GdxPlayer(
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
             val angleRandomness = Random.nextDouble(-0.8, 0.8) * (move.shotForce / MAX_SHOT_FORCE)
             destinationDirection.rotateRad(angleRandomness.toFloat())
-            puck?.shoot(destinationDirection, move.shotForce)
+
+            puck?.body?.applyLinearImpulse(destinationDirection.scl(move.shotForce), Vector2.Zero, true)
             dropPuck()
         }
 

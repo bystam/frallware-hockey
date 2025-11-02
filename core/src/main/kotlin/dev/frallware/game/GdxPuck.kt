@@ -21,7 +21,7 @@ class GdxPuck(world: World) {
 
     var holder: GdxPlayer? = null
 
-    private var contactCount: Int = 0
+//    private var contactCount: Int = 0
 
     init {
         // Create a dynamic body for the ball
@@ -46,11 +46,6 @@ class GdxPuck(world: World) {
         circleShape.dispose()
     }
 
-    fun shoot(destination: Vector2, force: Float) {
-        val direction = destination.cpy().nor()
-        body.applyLinearImpulse(direction.scl(force), Vector2.Zero, true)
-    }
-
     fun slowDown() {
         body.linearVelocity = body.linearVelocity.scl(0.03f)
     }
@@ -60,16 +55,16 @@ class GdxPuck(world: World) {
         body.linearVelocity = Vector2.Zero
     }
 
-    fun registerContact() {
-        contactCount += 1
-    }
-
-    fun deregisterContact() {
-        contactCount -= 1
-        if (contactCount == 0 && body.fixtureList[0].isSensor) {
-            body.fixtureList[0].isSensor = false
-        }
-    }
+//    fun registerContact() {
+//        contactCount += 1
+//    }
+//
+//    fun deregisterContact() {
+//        contactCount -= 1
+//        if (contactCount == 0 && body.fixtureList[0].isSensor) {
+//            body.fixtureList[0].isSensor = false
+//        }
+//    }
 
     fun render(shapeRenderer: ShapeRenderer) {
         shapeRenderer.color = Color.BLACK
