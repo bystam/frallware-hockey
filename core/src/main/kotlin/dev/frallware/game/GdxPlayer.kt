@@ -11,6 +11,7 @@ import dev.frallware.api.Player
 import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
 import dev.frallware.api.Point
+import kotlin.random.Random
 
 class GdxPlayer(
     world: World,
@@ -24,6 +25,10 @@ class GdxPlayer(
     companion object {
         const val RADIUS = 0.6f
         const val MAX_VELOCITY = 30f
+
+        const val MAX_ACCELERATION = 20f
+        const val MAX_SHOT_FORCE = 20f
+        const val MAX_PASS_FORCE = 15f
     }
 
     val body: Body
@@ -107,6 +112,8 @@ class GdxPlayer(
         move.shotDestination?.let { destination ->
             val position = body.worldCenter
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
+            val angleRandomness = Random.nextDouble(-0.8, 0.8) * (move.shotForce / MAX_SHOT_FORCE)
+            destinationDirection.rotateRad(angleRandomness.toFloat())
             puck?.shoot(destinationDirection, move.shotForce)
             dropPuck()
         }
@@ -165,19 +172,19 @@ class GdxPlayer(
 
         override fun skate(destination: Point, speed: Float): Move {
             this.moveDestination = destination
-            this.moveSpeed = speed
+            this.moveSpeed = speed.coerceAtMost(MAX_ACCELERATION)
             return this
         }
 
         override fun pass(player: Player, force: Float): Move {
             this.passDestination = player.position
-            this.passForce = force
+            this.passForce = force.coerceAtMost(MAX_PASS_FORCE)
             return this
         }
 
         override fun shoot(destination: Point, force: Float): Move {
             this.shotDestination = destination
-            this.shotForce = force
+            this.shotForce = force.coerceAtMost(MAX_SHOT_FORCE)
             return this
         }
     }
