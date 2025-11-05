@@ -59,8 +59,7 @@ class GdxGame(
     private var gameStartAt: Instant = Instant.now() + Duration.ofSeconds(2)
     private val zoomAnimation: TimedInterpolation = TimedInterpolation(
         fromValue = 0.4f,
-//        toValue = 0.7f,
-        toValue = 1.0f,
+        toValue = 0.7f,
         duration = 2f,
         interpolation = Interpolation.sine,
     )
