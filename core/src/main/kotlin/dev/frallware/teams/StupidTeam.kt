@@ -16,7 +16,7 @@ class StupidTeam(override val color: Color) : HockeyTeam {
     class Player : PlayerStrategy {
         override val name: String = "StupidPlayer"
 
-        private val speed = Random.nextDouble(5.0, 20.0).toFloat()
+        private val speed = Random.nextDouble(1.0, 15.0).toFloat()
 
         override fun step(state: GameState, operations: PlayerOperations) {
             if (state.me.hasPuck) {
