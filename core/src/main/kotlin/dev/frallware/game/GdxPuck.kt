@@ -44,8 +44,6 @@ class GdxPuck(world: World) {
             userData = this@GdxPuck
         }
         circleShape.dispose()
-
-        body.isBullet = true
     }
 
     fun slowDown() {
