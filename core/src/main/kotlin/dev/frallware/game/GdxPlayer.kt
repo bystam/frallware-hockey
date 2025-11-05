@@ -100,12 +100,14 @@ class GdxPlayer(
             val cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
             if (cross > 0.01) { // isLeft
                 body.setTransform(body.position, angle + 0.06f)
+                body.linearVelocity = body.linearVelocity.rotateRad(0.03f)
             }
             if (cross < -0.01) { // isRight
                 body.setTransform(body.position, angle - 0.06f)
+                body.linearVelocity = body.linearVelocity.rotateRad(-0.03f)
             }
 
-            body.applyForceToCenter(facingDirection.scl(move.moveSpeed), true)
+            body.applyForceToCenter(Vector2(move.moveSpeed, 0f).rotateRad(body.angle), true)
         }
 
         move.shotDestination?.let { destination ->

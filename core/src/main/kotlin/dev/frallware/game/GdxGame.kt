@@ -64,7 +64,7 @@ class GdxGame(
         interpolation = Interpolation.sine,
     )
 
-    private val leftPlayers: List<GdxPlayer> = leftTeam.players.mapIndexed { index, strategy ->
+    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(1).mapIndexed { index, strategy ->
         GdxPlayer(
             world = world,
             isGoalie = false,
@@ -87,7 +87,7 @@ class GdxGame(
         )
     }
 
-    private val rightPlayers: List<GdxPlayer> = rightTeam.players.mapIndexed { index, strategy ->
+    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(1).mapIndexed { index, strategy ->
         GdxPlayer(
             world = world,
             isGoalie = false,
