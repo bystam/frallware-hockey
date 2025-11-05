@@ -14,7 +14,7 @@ class GdxGoal(world: World, val side: Side) {
     companion object {
         const val GOAL_OFFSET: Float = 0.2f
         const val CAGE_THICKNESS: Float = 0.2f
-        const val RENDER_GOAL_SENSOR = true
+        const val RENDER_GOAL_SENSOR = false
     }
 
     val cageRect = RoundedRect.create(4f, 5f, 1.2f, 10)
