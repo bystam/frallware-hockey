@@ -24,8 +24,9 @@ class GdxPlayer(
 ) {
     companion object {
         const val RADIUS = 0.6f
-        const val MAX_VELOCITY = 15f
+        const val MAX_VELOCITY = 20f
 
+        const val MAX_ACCELERATION = 10f
         const val MAX_SHOT_FORCE = 10f
         const val MAX_PASS_FORCE = 5f
     }
@@ -104,8 +105,7 @@ class GdxPlayer(
                 body.setTransform(body.position, angle - 0.06f)
             }
 
-            body.linearVelocity = Vector2(move.moveSpeed, 0f).rotateRad(body.angle)
-//            body.applyForceToCenter(facingDirection.scl(move.moveSpeed), true)
+            body.applyForceToCenter(facingDirection.scl(move.moveSpeed), true)
         }
 
         move.shotDestination?.let { destination ->
@@ -119,12 +119,12 @@ class GdxPlayer(
         }
 
         // Clamp velocity to max speed
-//        val velocity = body.linearVelocity
-//        val speed = velocity.len()
-//        if (speed > MAX_VELOCITY) {
-//            velocity.scl(MAX_VELOCITY / speed)
-//            body.linearVelocity = velocity
-//        }
+        val velocity = body.linearVelocity
+        val speed = velocity.len()
+        if (speed > MAX_VELOCITY) {
+            velocity.scl(MAX_VELOCITY / speed)
+            body.linearVelocity = velocity
+        }
 
         puck?.let { puck ->
             val puckOffset = Vector2(0.8f * RADIUS, -0.8f * RADIUS).rotateRad(body.angle)
@@ -172,7 +172,7 @@ class GdxPlayer(
 
         override fun skate(destination: Point, speed: Float): Move {
             this.moveDestination = destination
-            this.moveSpeed = speed.coerceAtMost(MAX_VELOCITY)
+            this.moveSpeed = speed.coerceAtMost(MAX_ACCELERATION)
             return this
         }
 
