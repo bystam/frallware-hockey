@@ -22,7 +22,10 @@ class GdxRink(
         position.set(Constants.worldCenter)
     })
 
+    object OutsideRink
+
     private val rect: RoundedRect = RoundedRect.create(WIDTH, HEIGHT, 3f, 20)
+    private val outsideRinkRect: RoundedRect = RoundedRect.create(WIDTH + 1, HEIGHT + 1, 3f, 20)
 
     private val absoluteEdgePoints: List<Vector2> by lazy(LazyThreadSafetyMode.NONE) {
         val rinkCenter = body.worldCenter
@@ -40,6 +43,16 @@ class GdxRink(
         }
 
         shape.dispose()
+
+        // Create an "outside rink" body that we can use to detect if the puck was player outside the game
+        val outsideShape = ChainShape()
+        outsideShape.createLoop(outsideRinkRect.allPoints.toTypedArray())
+
+        body.createFixture(outsideShape, 0f).apply {
+            userData = OutsideRink
+        }
+
+        outsideShape.dispose()
     }
 
     fun render(shapeRenderer: ShapeRenderer) {

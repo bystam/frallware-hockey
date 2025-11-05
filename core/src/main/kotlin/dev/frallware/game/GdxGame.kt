@@ -59,7 +59,8 @@ class GdxGame(
     private var gameStartAt: Instant = Instant.now() + Duration.ofSeconds(2)
     private val zoomAnimation: TimedInterpolation = TimedInterpolation(
         fromValue = 0.4f,
-        toValue = 0.7f,
+//        toValue = 0.7f,
+        toValue = 1.0f,
         duration = 2f,
         interpolation = Interpolation.sine,
     )
@@ -187,6 +188,9 @@ class GdxGame(
             val player = (aData as? GdxPlayer) ?: (bData as? GdxPlayer)
             val goal = (aData as? GdxGoal) ?: (bData as? GdxGoal)
             val goalSensor = (aData as? GdxGoal.Sensor) ?: (bData as? GdxGoal.Sensor)
+            val outsideRink = (aData as? GdxRink.OutsideRink) ?: (bData as? GdxRink.OutsideRink)
+
+            puck?.registerContact()
 
             if (puck != null && player != null) {
                 player.takePuck(puck)
@@ -196,6 +200,9 @@ class GdxGame(
             }
             if (puck != null && goalSensor != null && goalResetAt == null) {
                 scores[goalSensor.side.opponent] = scores[goalSensor.side.opponent]!! + 1
+                goalResetAt = Instant.now().plusSeconds(3)
+            }
+            if (puck != null && outsideRink != null) {
                 goalResetAt = Instant.now().plusSeconds(3)
             }
             if (aData is GdxPlayer && bData is GdxPlayer) {
@@ -208,6 +215,10 @@ class GdxGame(
         }
 
         override fun endContact(contact: Contact) {
+            val aData = contact.fixtureA.userData
+            val bData = contact.fixtureB.userData
+            val puck = aData as? GdxPuck ?: bData as? GdxPuck
+            puck?.deregisterContact()
         }
 
         override fun preSolve(

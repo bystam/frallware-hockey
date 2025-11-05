@@ -28,10 +28,6 @@ class Main : ApplicationAdapter() {
     override fun create() {
         Box2D.init()
 
-        // Enable blending for smooth circles
-        Gdx.gl.glEnable(GL20.GL_BLEND)
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-
         game = GdxGame(
             world = world,
             viewport = viewport,
@@ -45,6 +41,8 @@ class Main : ApplicationAdapter() {
     }
 
     override fun render() {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         game.render()
     }
 
@@ -54,7 +52,8 @@ class Main : ApplicationAdapter() {
 }
 
 object Constants {
-    const val WORLD_WIDTH: Float = GdxRink.WIDTH + 10
-    const val WORLD_HEIGHT: Float = GdxRink.HEIGHT + 10
+    const val PADDING: Float = 5f
+    const val WORLD_WIDTH: Float = GdxRink.WIDTH + 2 * PADDING
+    const val WORLD_HEIGHT: Float = GdxRink.HEIGHT + 2 * PADDING
     val worldCenter = Vector2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
 }

@@ -13,6 +13,8 @@ class GdxGoal(world: World, val side: Side) {
 
     companion object {
         const val GOAL_OFFSET: Float = 0.2f
+        const val CAGE_THICKNESS: Float = 0.2f
+        const val RENDER_GOAL_SENSOR = true
     }
 
     val cageRect = RoundedRect.create(4f, 5f, 1.2f, 10)
@@ -52,7 +54,7 @@ class GdxGoal(world: World, val side: Side) {
         // goals sensor
         val floor = ChainShape()
         val floorPoints = cagePoints
-            .map { it.cpy().scl(0.95f) }
+            .map { it.cpy().scl(0.8f, 0.9f) }
         floor.createLoop(floorPoints.toTypedArray())
         body.createFixture(floor, 0f).apply {
             isSensor = true
@@ -75,11 +77,23 @@ class GdxGoal(world: World, val side: Side) {
     }
 
     fun render(shapeRenderer: ShapeRenderer) {
-        val center = body.worldCenter
+        val center = body.position
+
+        if (RENDER_GOAL_SENSOR) {
+            shapeRenderer.color = Color.TEAL
+            val areaPoints = cagePoints.map { it.cpy().scl(0.8f, 0.9f) }
+            for ((from, to) in areaPoints.windowed(2)) {
+                shapeRenderer.rectLine(center + from, center + to, CAGE_THICKNESS)
+            }
+            shapeRenderer.rectLine(center + areaPoints.first(), center + areaPoints.last(), CAGE_THICKNESS)
+        }
+
+        shapeRenderer.color = Color.RED.withAlpha(0.2f)
+        shapeRenderer.rectLine(center + cagePoints.first(), center + cagePoints.last(), CAGE_THICKNESS)
 
         shapeRenderer.color = Color.RED
         for ((from, to) in cagePoints.windowed(2)) {
-            shapeRenderer.rectLine(center + from, center + to, 0.2f)
+            shapeRenderer.rectLine(center + from, center + to, CAGE_THICKNESS)
         }
     }
 }

@@ -21,7 +21,7 @@ class GdxPuck(world: World) {
 
     var holder: GdxPlayer? = null
 
-//    private var contactCount: Int = 0
+    private var contactCount: Int = 0
 
     init {
         // Create a dynamic body for the ball
@@ -44,6 +44,8 @@ class GdxPuck(world: World) {
             userData = this@GdxPuck
         }
         circleShape.dispose()
+
+        body.isBullet = true
     }
 
     fun slowDown() {
@@ -55,16 +57,16 @@ class GdxPuck(world: World) {
         body.linearVelocity = Vector2.Zero
     }
 
-//    fun registerContact() {
-//        contactCount += 1
-//    }
-//
-//    fun deregisterContact() {
-//        contactCount -= 1
-//        if (contactCount == 0 && body.fixtureList[0].isSensor) {
-//            body.fixtureList[0].isSensor = false
-//        }
-//    }
+    fun registerContact() {
+        contactCount += 1
+    }
+
+    fun deregisterContact() {
+        contactCount -= 1
+        if (contactCount == 0 && body.fixtureList[0].isSensor) {
+            body.fixtureList[0].isSensor = false
+        }
+    }
 
     fun render(shapeRenderer: ShapeRenderer) {
         shapeRenderer.color = Color.BLACK
