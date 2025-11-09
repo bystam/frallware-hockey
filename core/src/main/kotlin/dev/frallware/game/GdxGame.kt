@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import dev.frallware.Constants
 import dev.frallware.api.HockeyTeam
+import dev.frallware.api.PlayerStrategy
 import java.time.Duration
 import java.time.Instant
 
@@ -64,61 +65,28 @@ class GdxGame(
         interpolation = Interpolation.sine,
     )
 
-    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(1).mapIndexed { index, strategy ->
-        GdxPlayer(
-            world = world,
-            isGoalie = false,
-            strategy = strategy,
-            color = leftTeam.color,
-            startingPoint = leftStartingPoints[index],
-            startingAngle = 0f,
-            stateMaker = {
-                StateImpl(
-                    player = it,
-                    thePuck = puck,
-                    friendlyGoalPosition = leftGoal.body.worldCenter,
-                    friendlyPlayers = leftPlayers,
-                    friendlyGoalie = leftPlayers.first(),
-                    enemyGoalPosition = rightGoal.body.worldCenter,
-                    enemyPlayers = rightPlayers,
-                    enemyGoalie = rightPlayers.first()
-                )
-            }
-        )
+    private val leftGoalie: GdxPlayer = createPlayer(
+        leftTeam.goalie, leftGoal.body.position + Vector2(3f, 0f), Side.Left, isGoalie = true
+    )
+    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(4).mapIndexed { index, strategy ->
+        createPlayer(strategy, leftStartingPoints[index], Side.Left, isGoalie = false)
     }
 
-    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(1).mapIndexed { index, strategy ->
-        GdxPlayer(
-            world = world,
-            isGoalie = false,
-            strategy = strategy,
-            color = rightTeam.color,
-            startingPoint = rightStartingPoints[index],
-            startingAngle = MathUtils.PI,
-            stateMaker = {
-                StateImpl(
-                    player = it,
-                    thePuck = puck,
-                    friendlyGoalPosition = rightGoal.body.worldCenter,
-                    friendlyPlayers = rightPlayers,
-                    friendlyGoalie = rightPlayers.first(),
-                    enemyGoalPosition = leftGoal.body.worldCenter,
-                    enemyPlayers = leftPlayers,
-                    enemyGoalie = leftPlayers.first()
-                )
-            }
-        )
+    private val rightGoalie: GdxPlayer = createPlayer(
+        rightTeam.goalie, rightGoal.body.position + Vector2(-3f, 0f), Side.Right, isGoalie = true
+    )
+    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(4).mapIndexed { index, strategy ->
+        createPlayer(strategy, rightStartingPoints[index], Side.Right, isGoalie = false)
     }
+
+    private val allPlayers = leftPlayers + rightPlayers + leftGoalie + rightGoalie
 
     init {
         world.setContactListener(HockeyContactListener())
     }
 
     fun reset() {
-        for (player in leftPlayers) {
-            player.reset()
-        }
-        for (player in rightPlayers) {
+        for (player in allPlayers) {
             player.reset()
         }
         puck.reset()
@@ -133,10 +101,7 @@ class GdxGame(
         }
 
         if (gameStartAt < Instant.now()) {
-            for (player in leftPlayers) {
-                player.update()
-            }
-            for (player in rightPlayers) {
+            for (player in allPlayers) {
                 player.update()
             }
         }
@@ -163,10 +128,7 @@ class GdxGame(
         puck.render(shapeRenderer)
         leftGoal.render(shapeRenderer)
         rightGoal.render(shapeRenderer)
-        for (player in leftPlayers) {
-            player.render(shapeRenderer)
-        }
-        for (player in rightPlayers) {
+        for (player in allPlayers) {
             player.render(shapeRenderer)
         }
 
@@ -231,5 +193,53 @@ class GdxGame(
             impulse: ContactImpulse
         ) {
         }
+    }
+
+    private fun createPlayer(
+        strategy: PlayerStrategy,
+        startingPoint: Vector2,
+        side: Side,
+        isGoalie: Boolean
+    ): GdxPlayer = GdxPlayer(
+        world = world,
+        isGoalie = isGoalie,
+        strategy = strategy,
+        color = when (side) {
+            Side.Left -> leftTeam.color
+            Side.Right -> rightTeam.color
+        },
+        startingPoint = startingPoint,
+        startingAngle = when (side) {
+            Side.Left -> 0f
+            Side.Right -> MathUtils.PI
+        },
+        stateMaker = {
+            createState(it, side)
+        }
+    )
+
+    private fun createState(player: GdxPlayer, side: Side): StateImpl {
+        val (friendlyPlayers, enemyPlayers) = when (side) {
+            Side.Left -> Pair(leftPlayers, rightPlayers)
+            Side.Right -> Pair(rightPlayers, leftPlayers)
+        }
+        val (friendlyGoalie, enemyGoalie) = when (side) {
+            Side.Left -> Pair(leftGoalie, rightGoalie)
+            Side.Right -> Pair(rightGoalie, leftGoalie)
+        }
+        val (friendlyGoal, enemyGoal) = when (side) {
+            Side.Left -> Pair(leftGoal.body.position, rightGoal.body.position)
+            Side.Right -> Pair(rightGoal.body.position, leftGoal.body.position)
+        }
+        return StateImpl(
+            player = player,
+            thePuck = puck,
+            friendlyGoalPosition = friendlyGoal,
+            friendlyPlayers = friendlyPlayers,
+            friendlyGoalie = friendlyGoalie,
+            enemyGoalPosition = enemyGoal,
+            enemyPlayers = enemyPlayers,
+            enemyGoalie = enemyGoalie,
+        )
     }
 }
