@@ -1,10 +1,8 @@
-package dev.frallware.api
-
-import com.badlogic.gdx.graphics.Color
+package frallware.hockey.api
 
 interface HockeyTeam {
     val name: String
-    val color: Color // TODO no gdx dependency
+    val color: Color
 
     val goalie: GoalieStrategy
     val skaters: List<SkaterStrategy>

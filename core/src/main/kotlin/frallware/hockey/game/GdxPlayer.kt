@@ -1,4 +1,4 @@
-package dev.frallware.game
+package frallware.hockey.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -8,13 +8,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
-import dev.frallware.api.GoalieOperations
-import dev.frallware.api.GoalieStrategy
-import dev.frallware.api.Player
-import dev.frallware.api.PlayerStrategy
-import dev.frallware.api.Point
-import dev.frallware.api.SkaterOperations
-import dev.frallware.api.SkaterStrategy
+import frallware.hockey.api.GoalieOperations
+import frallware.hockey.api.GoalieStrategy
+import frallware.hockey.api.Player
+import frallware.hockey.api.PlayerStrategy
+import frallware.hockey.api.Point
+import frallware.hockey.api.SkaterOperations
+import frallware.hockey.api.SkaterStrategy
 import kotlin.random.Random
 
 class GdxPlayer(

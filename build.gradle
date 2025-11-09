@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 buildscript {
   repositories {
     mavenCentral()
@@ -8,9 +10,11 @@ buildscript {
   }
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
   }
 }
+
+group = "frallware.hockey"
+version = "0.1"
 
 allprojects {
   apply plugin: 'eclipse'
@@ -53,9 +57,9 @@ configure(subprojects) {
   compileJava {
     options.incremental = true
   }
-  compileKotlin.compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-  compileTestKotlin.compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-  
+  compileKotlin.compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+  compileTestKotlin.compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+
 }
 
 subprojects {

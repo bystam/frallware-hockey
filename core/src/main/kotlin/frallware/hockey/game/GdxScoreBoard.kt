@@ -1,11 +1,11 @@
-package dev.frallware.game
+package frallware.hockey.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.Viewport
-import dev.frallware.Constants
+import frallware.hockey.Constants
 
 class GdxScoreBoard(
     private val viewport: Viewport,

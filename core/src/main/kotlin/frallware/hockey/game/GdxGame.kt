@@ -1,4 +1,4 @@
-package dev.frallware.game
+package frallware.hockey.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -14,9 +14,9 @@ import com.badlogic.gdx.physics.box2d.Manifold
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
-import dev.frallware.Constants
-import dev.frallware.api.HockeyTeam
-import dev.frallware.api.PlayerStrategy
+import frallware.hockey.Constants
+import frallware.hockey.api.HockeyTeam
+import frallware.hockey.api.PlayerStrategy
 import java.time.Duration
 import java.time.Instant
 
@@ -205,7 +205,7 @@ class GdxGame(
         color = when (side) {
             Side.Left -> leftTeam.color
             Side.Right -> rightTeam.color
-        },
+        }.toGdx(),
         startingPoint = startingPoint,
         startingAngle = when (side) {
             Side.Left -> 0f

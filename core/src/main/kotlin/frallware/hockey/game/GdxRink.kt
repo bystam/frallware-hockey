@@ -1,4 +1,4 @@
-package dev.frallware.game
+package frallware.hockey.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
 import com.badlogic.gdx.physics.box2d.World
-import dev.frallware.Constants
+import frallware.hockey.Constants
 
 class GdxRink(
     val world: World,

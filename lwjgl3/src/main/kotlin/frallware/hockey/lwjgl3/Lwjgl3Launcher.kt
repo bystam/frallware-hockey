@@ -1,10 +1,10 @@
 @file:JvmName("Lwjgl3Launcher")
 
-package dev.frallware.lwjgl3
+package frallware.hockey.lwjgl3
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import dev.frallware.Main
+import frallware.hockey.Main
 
 /** Launches the desktop (LWJGL3) application. */
 fun main() {

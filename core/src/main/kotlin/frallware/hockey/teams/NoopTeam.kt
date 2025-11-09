@@ -1,17 +1,17 @@
-package dev.frallware.teams
+package frallware.hockey.teams
 
-import com.badlogic.gdx.graphics.Color
-import dev.frallware.api.GameState
-import dev.frallware.api.GoalieOperations
-import dev.frallware.api.GoalieStrategy
-import dev.frallware.api.HockeyTeam
-import dev.frallware.api.SkaterOperations
-import dev.frallware.api.SkaterStrategy
+import frallware.hockey.api.Color
+import frallware.hockey.api.GameState
+import frallware.hockey.api.GoalieOperations
+import frallware.hockey.api.GoalieStrategy
+import frallware.hockey.api.HockeyTeam
+import frallware.hockey.api.SkaterOperations
+import frallware.hockey.api.SkaterStrategy
 
 class NoopTeam : HockeyTeam {
 
     override val name: String = "NoopTeam"
-    override val color: Color = Color.RED
+    override val color: Color = Color(1f, 0f, 0f)
     override val goalie: GoalieStrategy = Goalie
     override val skaters: List<SkaterStrategy> = listOf(Skater, Skater, Skater, Skater)
 

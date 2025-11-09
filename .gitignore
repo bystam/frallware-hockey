@@ -3,6 +3,7 @@
 gradle-app.setting
 /build/
 /android/build/
+/api/build/
 /core/build/
 /lwjgl2/build/
 /lwjgl3/build/

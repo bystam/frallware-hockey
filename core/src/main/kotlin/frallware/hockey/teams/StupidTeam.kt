@@ -1,13 +1,13 @@
-package dev.frallware.teams
+package frallware.hockey.teams
 
-import com.badlogic.gdx.graphics.Color
-import dev.frallware.api.GameState
-import dev.frallware.api.GoalieOperations
-import dev.frallware.api.GoalieStrategy
-import dev.frallware.api.HockeyTeam
-import dev.frallware.api.Point
-import dev.frallware.api.SkaterOperations
-import dev.frallware.api.SkaterStrategy
+import frallware.hockey.api.Color
+import frallware.hockey.api.GameState
+import frallware.hockey.api.GoalieOperations
+import frallware.hockey.api.GoalieStrategy
+import frallware.hockey.api.HockeyTeam
+import frallware.hockey.api.Point
+import frallware.hockey.api.SkaterOperations
+import frallware.hockey.api.SkaterStrategy
 import kotlin.random.Random
 
 class StupidTeam(override val color: Color) : HockeyTeam {

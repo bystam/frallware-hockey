@@ -1,16 +1,15 @@
-package dev.frallware
+package frallware.hockey
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.viewport.FitViewport
-import dev.frallware.game.GdxGame
-import dev.frallware.game.GdxRink
-import dev.frallware.teams.StupidTeam
+import frallware.hockey.game.GdxGame
+import frallware.hockey.game.GdxRink
+import frallware.hockey.teams.StupidTeam
 
 /**
  * TODO:
@@ -31,8 +30,8 @@ class Main : ApplicationAdapter() {
         game = GdxGame(
             world = world,
             viewport = viewport,
-            leftTeam = StupidTeam(Color.TEAL),
-            rightTeam = StupidTeam(Color.MAROON)
+            leftTeam = StupidTeam(frallware.hockey.api.Color(0.8f, 0.2f, 0.2f)),
+            rightTeam = StupidTeam(frallware.hockey.api.Color(0.2f, 0.2f, 0.8f))
         )
     }
 

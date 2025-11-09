@@ -1,4 +1,4 @@
-package dev.frallware.game
+package frallware.hockey.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2
 import kotlin.math.min
 
 fun Color.withAlpha(alpha: Float): Color = cpy().set(r, g, b, alpha)
+fun frallware.hockey.api.Color.toGdx(): Color = Color(r, g, b, 1f)
 
 operator fun Vector2.plus(v: Vector2): Vector2 = cpy().add(v)
 

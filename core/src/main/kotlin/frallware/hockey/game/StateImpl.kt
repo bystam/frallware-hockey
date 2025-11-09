@@ -1,12 +1,12 @@
-package dev.frallware.game
+package frallware.hockey.game
 
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import dev.frallware.api.GameState
-import dev.frallware.api.Player
-import dev.frallware.api.Point
-import dev.frallware.api.Puck
-import dev.frallware.api.Vector
+import frallware.hockey.api.GameState
+import frallware.hockey.api.Player
+import frallware.hockey.api.Point
+import frallware.hockey.api.Puck
+import frallware.hockey.api.Vector
 
 class StateImpl(
     val player: GdxPlayer,
