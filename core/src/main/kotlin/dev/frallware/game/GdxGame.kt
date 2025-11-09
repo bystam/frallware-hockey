@@ -66,17 +66,17 @@ class GdxGame(
     )
 
     private val leftGoalie: GdxPlayer = createPlayer(
-        leftTeam.goalie, leftGoal.body.position + Vector2(3f, 0f), Side.Left, isGoalie = true
+        leftTeam.goalie, leftGoal.body.position + Vector2(2f, 0f), Side.Left,
     )
-    private val leftPlayers: List<GdxPlayer> = leftTeam.players.take(4).mapIndexed { index, strategy ->
-        createPlayer(strategy, leftStartingPoints[index], Side.Left, isGoalie = false)
+    private val leftPlayers: List<GdxPlayer> = leftTeam.skaters.take(4).mapIndexed { index, strategy ->
+        createPlayer(strategy, leftStartingPoints[index], Side.Left)
     }
 
     private val rightGoalie: GdxPlayer = createPlayer(
-        rightTeam.goalie, rightGoal.body.position + Vector2(-3f, 0f), Side.Right, isGoalie = true
+        rightTeam.goalie, rightGoal.body.position + Vector2(-2f, 0f), Side.Right,
     )
-    private val rightPlayers: List<GdxPlayer> = rightTeam.players.take(4).mapIndexed { index, strategy ->
-        createPlayer(strategy, rightStartingPoints[index], Side.Right, isGoalie = false)
+    private val rightPlayers: List<GdxPlayer> = rightTeam.skaters.take(4).mapIndexed { index, strategy ->
+        createPlayer(strategy, rightStartingPoints[index], Side.Right)
     }
 
     private val allPlayers = leftPlayers + rightPlayers + leftGoalie + rightGoalie
@@ -199,10 +199,8 @@ class GdxGame(
         strategy: PlayerStrategy,
         startingPoint: Vector2,
         side: Side,
-        isGoalie: Boolean
     ): GdxPlayer = GdxPlayer(
         world = world,
-        isGoalie = isGoalie,
         strategy = strategy,
         color = when (side) {
             Side.Left -> leftTeam.color

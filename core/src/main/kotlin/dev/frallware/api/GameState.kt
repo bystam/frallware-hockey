@@ -1,5 +1,7 @@
 package dev.frallware.api
 
+import kotlin.math.hypot
+
 interface GameState {
     val puck: Puck
 
@@ -33,6 +35,8 @@ data class Point(
     operator fun plus(vector: Vector): Point = Point(this.x + vector.dx, this.y + vector.dy)
 
     fun offset(dx: Float = 0f, dy: Float = 0f): Point = Point(this.x + dx, this.y + dy)
+
+    fun distanceTo(other: Point): Float = hypot(this.x - other.x, this.y - other.y)
 
     companion object {
         val zero: Point = Point(0f, 0f)

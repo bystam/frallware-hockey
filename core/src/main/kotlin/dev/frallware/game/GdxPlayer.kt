@@ -8,15 +8,17 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
+import dev.frallware.api.GoalieOperations
+import dev.frallware.api.GoalieStrategy
 import dev.frallware.api.Player
-import dev.frallware.api.PlayerOperations
 import dev.frallware.api.PlayerStrategy
 import dev.frallware.api.Point
+import dev.frallware.api.SkaterOperations
+import dev.frallware.api.SkaterStrategy
 import kotlin.random.Random
 
 class GdxPlayer(
     world: World,
-    val isGoalie: Boolean,
     val strategy: PlayerStrategy,
     val color: Color,
     val startingPoint: Vector2,
@@ -28,6 +30,7 @@ class GdxPlayer(
         const val MAX_VELOCITY = 20f
 
         const val MAX_ACCELERATION = 10f
+        const val MAX_GLIDE = 5f
         const val MAX_SHOT_FORCE = 10f
         const val MAX_PASS_FORCE = 5f
 
@@ -106,12 +109,15 @@ class GdxPlayer(
     }
 
     fun update() {
-        val move = Move()
-        strategy.step(state, move)
+        val move = StepOperations()
+        when (strategy) {
+            is GoalieStrategy -> strategy.step(state, move)
+            is SkaterStrategy -> strategy.step(state, move)
+        }
         val angle = body.angle
 
-        move.moveDestination?.let { destination ->
-            val position = body.worldCenter
+        move.turnTowards?.let { destination ->
+            val position = body.position
             val facingDirection = Vector2(1f, 0f).rotateRad(angle)
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
 
@@ -131,6 +137,13 @@ class GdxPlayer(
             }
 
             body.applyForceToCenter(Vector2(move.moveSpeed, 0f).rotateRad(body.angle), true)
+        }
+
+        move.glideTowards?.let { destination ->
+            // negative should be glide to the goalies right
+            val position = body.position
+            val glideSpeed = Vector2(destination.x - position.x, destination.y - position.y).nor().scl(move.moveSpeed)
+            body.linearVelocity = glideSpeed
         }
 
         move.shotDestination?.let { destination ->
@@ -192,9 +205,10 @@ class GdxPlayer(
         )
     }
 
-    inner class Move : PlayerOperations {
-        var moveDestination: Point? = null
+    inner class StepOperations : SkaterOperations, GoalieOperations {
+        var turnTowards: Point? = null
             private set
+        var glideTowards: Point? = null
         var moveSpeed: Float = 0f
             private set
 
@@ -202,25 +216,37 @@ class GdxPlayer(
             private set
         var passForce: Float = 0f
             private set
-
         var shotDestination: Point? = null
             private set
         var shotForce: Float = 0f
             private set
 
-        override fun skate(destination: Point, speed: Float): Move {
-            this.moveDestination = destination
+        override fun skate(destination: Point, speed: Float): StepOperations {
+            this.turnTowards = destination
             this.moveSpeed = speed.coerceAtMost(MAX_ACCELERATION)
+            this.glideTowards = null // mutually exclusive
             return this
         }
 
-        override fun pass(player: Player, force: Float): Move {
+        override fun glide(destination: Point, speed: Float): StepOperations {
+            this.glideTowards = destination
+            this.moveSpeed = speed.coerceAtMost(MAX_GLIDE)
+            this.turnTowards = null // mutually exclusive
+            return this
+        }
+
+        override fun face(point: Point): StepOperations {
+            this.turnTowards = point
+            return this
+        }
+
+        override fun pass(player: Player, force: Float): StepOperations {
             this.passDestination = player.position
             this.passForce = force.coerceAtMost(MAX_PASS_FORCE)
             return this
         }
 
-        override fun shoot(destination: Point, force: Float): Move {
+        override fun shoot(destination: Point, force: Float): StepOperations {
             this.shotDestination = destination
             this.shotForce = force.coerceAtMost(MAX_SHOT_FORCE)
             return this
