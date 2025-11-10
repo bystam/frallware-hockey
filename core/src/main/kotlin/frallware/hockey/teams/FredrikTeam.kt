@@ -10,7 +10,7 @@ import frallware.hockey.api.SkaterOperations
 import frallware.hockey.api.SkaterStrategy
 import kotlin.random.Random
 
-class StupidTeam(override val color: Color) : HockeyTeam {
+class FredrikTeam(override val color: Color) : HockeyTeam {
 
     override val name: String = "StupidTeam"
     override val goalie: GoalieStrategy = Goalie()
@@ -19,7 +19,7 @@ class StupidTeam(override val color: Color) : HockeyTeam {
     class Skater : SkaterStrategy {
         override val name: String = "StupidPlayer"
 
-        private val speed = Random.nextDouble(15.0, 25.0).toFloat()
+        private val speed = Random.nextDouble(5.0, 20.0).toFloat()
 
         override fun step(state: GameState, operations: SkaterOperations) {
             if (state.me.hasPuck) {

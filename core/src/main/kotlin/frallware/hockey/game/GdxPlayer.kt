@@ -147,7 +147,8 @@ class GdxPlayer(
                 body.angularVelocity = 0f
             }
 
-            body.applyForceToCenter(Vector2(move.moveSpeed, 0f).rotateRad(body.angle), true)
+            val acceleration = move.moveSpeed - body.linearVelocity.len()
+            body.applyForceToCenter(Vector2(acceleration, 0f).rotateRad(body.angle), true)
         }
 
         move.glideTowards?.let { destination ->
@@ -168,12 +169,12 @@ class GdxPlayer(
         }
 
         // Clamp velocity to max speed
-        val velocity = body.linearVelocity
-        val speed = velocity.len()
-        if (speed > MAX_VELOCITY) {
-            velocity.scl(MAX_VELOCITY / speed)
-            body.linearVelocity = velocity
-        }
+//        val velocity = body.linearVelocity
+//        val speed = velocity.len()
+//        if (speed > MAX_VELOCITY) {
+//            velocity.scl(MAX_VELOCITY / speed)
+//            body.linearVelocity = velocity
+//        }
 
         puck?.let { puck ->
             val puckOffset = (stickTip + Vector2(0.1f, 0.3f)).rotateRad(body.angle)
@@ -234,7 +235,7 @@ class GdxPlayer(
 
         override fun skate(destination: Point, speed: Float): StepOperations {
             this.turnTowards = destination
-            this.moveSpeed = speed.coerceAtMost(MAX_ACCELERATION)
+            this.moveSpeed = speed.coerceAtMost(MAX_VELOCITY)
             this.glideTowards = null // mutually exclusive
             return this
         }
