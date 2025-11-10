@@ -6,11 +6,16 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import kotlin.math.min
+import kotlin.random.Random
 
 fun Color.withAlpha(alpha: Float): Color = cpy().set(r, g, b, alpha)
 fun frallware.hockey.api.Color.toGdx(): Color = Color(r, g, b, 1f)
 
 operator fun Vector2.plus(v: Vector2): Vector2 = cpy().add(v)
+
+fun Random.Default.boolean(chance: Double): Boolean {
+    return nextDouble(0.0, 1.0) < chance
+}
 
 enum class Side {
     Left, Right;

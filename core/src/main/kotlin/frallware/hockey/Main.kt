@@ -14,22 +14,22 @@ import frallware.hockey.teams.StupidTeam
 /**
  * TODO:
  * - Make puck not able to travel through things
+ * - make scores overlay
+ * - make puck pickup fail sometimes as high puck velocities
+ * - Rewrite how skate speed works:
+ *    - Instead of treating speed as acceleration, we treat it as speed
+ *    - If the speed is lower than wanted, we apply acceleration,
+ *    - If the speed is higher than wanted, we apply break
  * - Add names to players
  * - make shot/pass accuracy worse at wide angles
  * - paint circles
  * - make goalie bigger maybe?
- * - make scores overlay
  * - don't allow puck pickup from behind
- * - make puck pickup fail sometimes as high puck velocities
  * - animate shooting puck
  * - make puck pickup something that one has to act upon instead of automatic? (except for goalies maybe?)
  * - generally improve rendering
  * - [frallware.hockey.api.GameState].isFaceOff?
  * - Improve puck going through things...
- * - Rewrite how skate speed works:
- *    - Instead of treating speed as acceleration, we treat it as speed
- *    - If the speed is lower than wanted, we apply acceleration,
- *    - If the speed is higher than wanted, we apply break
  */
 class Main : ApplicationAdapter() {
 

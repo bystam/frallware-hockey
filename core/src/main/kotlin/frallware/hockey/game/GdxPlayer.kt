@@ -100,7 +100,13 @@ class GdxPlayer(
         dropPuck()
     }
 
-    fun takePuck(puck: GdxPuck) {
+    fun tryTakePuck(puck: GdxPuck) {
+        val puckSpeed = puck.body.linearVelocity.len()
+        if (puckSpeed > 50f && Random.boolean(0.3)) {
+            // failed to take it
+            return
+        }
+
         puck.holder?.dropPuck()
         puck.holder = this
         this.puck = puck
