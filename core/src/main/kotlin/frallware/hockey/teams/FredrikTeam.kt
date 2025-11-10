@@ -1,6 +1,5 @@
 package frallware.hockey.teams
 
-import frallware.hockey.Constants
 import frallware.hockey.api.Color
 import frallware.hockey.api.GameState
 import frallware.hockey.api.GoalieOperations
@@ -9,28 +8,23 @@ import frallware.hockey.api.HockeyTeam
 import frallware.hockey.api.Point
 import frallware.hockey.api.SkaterOperations
 import frallware.hockey.api.SkaterStrategy
-import kotlin.random.Random
+import frallware.hockey.api.Vector
 
 class FredrikTeam(override val color: Color) : HockeyTeam {
 
-    private val restingPoints = listOf(
-        Point(x = 1 * Constants.WORLD_WIDTH / 3, y = 2 * Constants.WORLD_HEIGHT / 3), // topLeft
-        Point(x = 2 * Constants.WORLD_WIDTH / 3, y = 2 * Constants.WORLD_HEIGHT / 3), // topRight
-        Point(x = 1 * Constants.WORLD_WIDTH / 3, y = 1 * Constants.WORLD_HEIGHT / 3), // bottomLeft
-        Point(x = 2 * Constants.WORLD_WIDTH / 3, y = 1 * Constants.WORLD_HEIGHT / 3), // bottomRight
-    )
-
     override val name: String = "StupidTeam"
     override val goalie: GoalieStrategy = Goalie()
-    override val skaters: List<SkaterStrategy> = restingPoints.mapIndexed { index, point ->
-        Skater("Player $index", point)
-    }
+    override val skaters: List<SkaterStrategy> = listOf(
+        Attacker("Attacker 1", offsetY = 5f),
+        Attacker("Attacker 2", offsetY = -5f),
+        Defender("Defender 1", goalOffsetY = -2f),
+        Defender("Defender 2", goalOffsetY = -2f),
+    )
 
-    class Skater(
+    class Attacker(
         override val name: String,
-        val restingPoint: Point,
+        val offsetY: Float,
     ) : SkaterStrategy {
-        private val speed = Random.nextDouble(5.0, 20.0).toFloat()
 
         override fun step(state: GameState, operations: SkaterOperations) {
             if (state.me.hasPuck) {
@@ -44,23 +38,72 @@ class FredrikTeam(override val color: Color) : HockeyTeam {
                     val someoneElse = state.friendlyPlayers.first { it != state.me }
                     operations.pass(someoneElse, 5f)
                 }
+                if (distanceToTarget > distanceBetweenGoals) {
+                    // very far away - pass!
+                    val someoneElse = state.friendlyPlayers.first { it != state.me }
+                    operations.pass(someoneElse, 5f)
+                }
                 if (distanceToTarget < 10f) {
-                    operations.skate(state.enemyGoalPosition, 25f)
+                    operations.shoot(state.enemyGoalPosition, 10f)
                 }
 
             } else {
-                val closestFriendlyPlayer = state.friendlyPlayers
-                    .minBy { it.position.distanceTo(state.puck.position) }
+                val closestFriendlyPlayers = state.friendlyPlayers
+                    .sortedBy { it.position.distanceTo(state.puck.position) }
+                    .take(2)
 
-                if (closestFriendlyPlayer == state.me) { // chase puck
+                if (state.me in closestFriendlyPlayers) { // chase puck
                     operations.skate(state.puck.position, 25f)
                 } else { // or stay at resting point
-                    operations.skate(restingPoint, state.me.position.distanceTo(restingPoint))
+
+                    val forward = state.enemyGoalPosition - state.friendlyGoalPosition
+                    val goalOffset = forward * 0.8f + Vector(dy = offsetY)
+                    val myPoint = state.friendlyGoalPosition + goalOffset
+
+                    operations.skate(myPoint, state.me.position.distanceTo(myPoint))
                 }
             }
         }
     }
 
+    class Defender(
+        override val name: String,
+        val goalOffsetY: Float,
+    ) : SkaterStrategy {
+
+        override fun step(state: GameState, operations: SkaterOperations) {
+            if (state.me.hasPuck) {
+                operations.skate(state.enemyGoalPosition, 25f)
+
+                val distanceBetweenGoals = state.friendlyGoalPosition.distanceTo(state.enemyGoalPosition)
+                val distanceToTarget = state.me.position.distanceTo(state.enemyGoalPosition)
+                val distanceToOwnGoal = state.me.position.distanceTo(state.friendlyGoalPosition)
+
+                val friendlyClosestToGoal = state.friendlyPlayers.minBy {
+                    it.position.distanceTo(state.enemyGoalPosition)
+                }
+
+                if (distanceToTarget < distanceBetweenGoals) {
+                    operations.pass(friendlyClosestToGoal, 3f)
+                }
+            } else {
+                val closestFriendlyPlayers = state.friendlyPlayers
+                    .sortedBy { it.position.distanceTo(state.puck.position) }
+                    .take(1)
+
+                if (state.me in closestFriendlyPlayers) { // chase puck
+                    operations.skate(state.puck.position, 25f)
+                } else { // or stay at resting point
+
+                    val forward = state.enemyGoalPosition - state.friendlyGoalPosition
+                    val goalOffset = forward * 0.1f + Vector(dy = goalOffsetY)
+                    val myPoint = state.friendlyGoalPosition + goalOffset
+
+                    operations.skate(myPoint, state.me.position.distanceTo(myPoint))
+                }
+            }
+        }
+    }
 
     class Goalie : GoalieStrategy {
         override val name: String = "StupidGoalie"
