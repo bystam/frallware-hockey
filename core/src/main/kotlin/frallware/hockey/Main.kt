@@ -26,6 +26,11 @@ import frallware.hockey.teams.StupidTeam
  * - make puck pickup something that one has to act upon instead of automatic? (except for goalies maybe?)
  * - generally improve rendering
  * - [frallware.hockey.api.GameState].isFaceOff?
+ * - Improve puck going through things...
+ * - Rewrite how skate speed works:
+ *    - Instead of treating speed as acceleration, we treat it as speed
+ *    - If the speed is lower than wanted, we apply acceleration,
+ *    - If the speed is higher than wanted, we apply break
  */
 class Main : ApplicationAdapter() {
 
