@@ -38,11 +38,13 @@ class MeidiTeam(override val color: Color) : HockeyTeam {
 
         override fun step(state: GameState, operations: SkaterOperations) {
             val victim = state.puck.holder
-            if (victim != null && state.enemyPlayers.contains(victim)) {
+            if (state.me.hasPuck) {
+                operations.shoot(state.enemyGoalPosition, 5f)
+            } else if (victim != null && state.enemyPlayers.contains(victim)) {
                 operations.skate(victim.position, 25f)
             } else {
                 // go stand in front of my own goal
-                val defendPoint = getDefendPointInTheMiddle(state)
+                val defendPoint = getDefendPointInTheMiddle(state, 10f)
                 operations.skate(defendPoint, 10f)
             }
         }
@@ -52,12 +54,27 @@ class MeidiTeam(override val color: Color) : HockeyTeam {
         override val name: String = "ShootyPlayer"
 
         override fun step(state: GameState, operations: SkaterOperations) {
-            if (state.me.hasPuck && state.me.position.distanceTo(state.enemyGoalPosition) < 15f) {
+            val isMyGoalOnLeftSide = isGoalOnLeftSide(state)
+            if (state.me.hasPuck && state.me.position.distanceTo(state.enemyGoalPosition) < 15f && amIInFrontOfGoal(state, isMyGoalOnLeftSide)) {
                 operations.shoot(state.enemyGoalPosition, 7f)
             } else if (state.me.hasPuck) {
-                operations.skate(state.enemyGoalPosition, 20f)
+                operations.skate(getShootyPointInTheMiddle(state), 25f)
+            } else if (state.enemyPlayers.contains(state.puck.holder)){
+                operations.skate(state.puck.position, 25f)
+            } else if (state.friendlyPlayers.contains(state.puck.holder)) {
+                // keep a respectful distance
+                val holder = state.puck.holder!!
+                operations.skate(holder.position.offset(dy = 5f), 15f)
             } else {
                 operations.skate(state.puck.position, 25f)
+            }
+        }
+
+        private fun amIInFrontOfGoal(state: GameState, myGoalOnLeftSide: Boolean): Boolean {
+            return if (myGoalOnLeftSide) {
+                state.me.position.x < state.enemyGoalPosition.x
+            } else {
+                state.me.position.x > state.enemyGoalPosition.x
             }
         }
     }
@@ -67,14 +84,19 @@ class MeidiTeam(override val color: Color) : HockeyTeam {
 
         override fun step(state: GameState, operations: SkaterOperations) {
             // a little bit above the middle point between the goal and the center of the rink
-            val defendPoint = getDefendPointInTheMiddle(state).offset(dy = 2f)
+            val defendPoint = getDefendPointInTheMiddle(state, 5f).offset(dy = 2f)
 
-            if (state.me.position.distanceTo(defendPoint) > 10f) {
-                operations.skate(defendPoint, 15f)
-            } else if (state.enemyPlayers.contains(state.puck.holder)) {
-                // stand in front of the puck holder
-                val holder = state.puck.holder!!
-                operations.skate(holder.position.offset(dx = if (isGoalOnLeftSide(state)) -1f else 1f), 10f)
+            when {
+                state.me.hasPuck && state.me.position.distanceTo(defendPoint) < 10f -> {
+                    operations.shoot(state.enemyGoalPosition, 10f)
+                }
+                state.me.position.distanceTo(defendPoint) > 10f -> {
+                    operations.skate(defendPoint, 15f)
+                }
+                state.enemyPlayers.contains(state.puck.holder) -> {
+                    val holder = state.puck.holder!!
+                    operations.skate(holder.position, 25f)
+                }
             }
         }
     }
@@ -104,13 +126,25 @@ class MeidiTeam(override val color: Color) : HockeyTeam {
     }
 }
 
-private fun getDefendPointInTheMiddle(state: GameState): Point {
+private fun getShootyPointInTheMiddle(state: GameState): Point {
+    val goalPosition = state.enemyGoalPosition
+    val enemyGoalOnRight = isGoalOnLeftSide(state)
+    val shootyPoint = if (enemyGoalOnRight) {
+        goalPosition.offset(dx = -5f, dy = 0f)
+    } else {
+        goalPosition.offset(dx = 5f, dy = 0f)
+    }
+
+    return shootyPoint
+}
+
+private fun getDefendPointInTheMiddle(state: GameState, xOffset: Float): Point {
     val myGoalIsOnLeftSide = isGoalOnLeftSide(state)
 
     val defendPoint = if (myGoalIsOnLeftSide) {
-        state.friendlyGoalPosition.offset(dx = 3f, dy = 0f)
+        state.friendlyGoalPosition.offset(dx = xOffset, dy = 0f)
     } else {
-        state.friendlyGoalPosition.offset(dx = -3f, dy = 0f)
+        state.friendlyGoalPosition.offset(dx = -xOffset, dy = 0f)
     }
     return defendPoint
 }
