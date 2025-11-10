@@ -27,9 +27,9 @@ class GdxPlayer(
 ) {
     companion object {
         const val RADIUS = 0.6f
-        const val MAX_VELOCITY = 20f
+        const val MAX_VELOCITY = 25f
 
-        const val MAX_ACCELERATION = 10f
+        const val MAX_ACCELERATION = 15f
         const val MAX_GLIDE = 5f
         const val MAX_SHOT_FORCE = 10f
         const val MAX_PASS_FORCE = 5f
@@ -126,10 +126,10 @@ class GdxPlayer(
             val b = facingDirection
             val c = destinationDirection
             val cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
-            if (cross > 0.01) { // isLeft
+            if (cross > 0.1) { // isLeft
                 body.angularVelocity = 3.06f
                 body.linearVelocity = body.linearVelocity.rotateRad(0.03f)
-            } else if (cross < -0.01) { // isRight
+            } else if (cross < -0.1) { // isRight
                 body.angularVelocity = -3.06f
                 body.linearVelocity = body.linearVelocity.rotateRad(-0.03f)
             } else {
