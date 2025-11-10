@@ -52,8 +52,8 @@ class MeidiTeam(override val color: Color) : HockeyTeam {
         override val name: String = "ShootyPlayer"
 
         override fun step(state: GameState, operations: SkaterOperations) {
-            if (state.me.hasPuck && state.me.position.distanceTo(state.enemyGoalPosition) < 20f) {
-                operations.shoot(state.enemyGoalPosition, 10f)
+            if (state.me.hasPuck && state.me.position.distanceTo(state.enemyGoalPosition) < 15f) {
+                operations.shoot(state.enemyGoalPosition, 7f)
             } else if (state.me.hasPuck) {
                 operations.skate(state.enemyGoalPosition, 20f)
             } else {
