@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.viewport.FitViewport
 import frallware.hockey.game.GdxGame
 import frallware.hockey.game.GdxRink
+import frallware.hockey.teams.MeidiTeam
 import frallware.hockey.teams.StupidTeam
 
 /**
@@ -43,8 +44,8 @@ class Main : ApplicationAdapter() {
         game = GdxGame(
             world = world,
             viewport = viewport,
-            leftTeam = StupidTeam(frallware.hockey.api.Color(0.8f, 0.2f, 0.2f)),
-            rightTeam = StupidTeam(frallware.hockey.api.Color(0.2f, 0.2f, 0.8f))
+            leftTeam = MeidiTeam(frallware.hockey.api.Color(0.8f, 0.2f, 0.2f)),
+            rightTeam = MeidiTeam(frallware.hockey.api.Color(0.2f, 0.2f, 0.8f))
         )
     }
 
