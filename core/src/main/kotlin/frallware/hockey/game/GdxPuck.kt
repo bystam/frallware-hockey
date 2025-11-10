@@ -13,6 +13,7 @@ class GdxPuck(world: World) {
 
     companion object {
         const val RADIUS = 0.2f
+        const val COLLISION_GROUP: Int = 1 shl 2
 
         val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2)
     }
@@ -21,7 +22,7 @@ class GdxPuck(world: World) {
 
     var holder: GdxPlayer? = null
 
-    private var contactCount: Int = 0
+//    private var contactCount: Int = 0
 
     init {
         // Create a dynamic body for the ball
@@ -42,6 +43,10 @@ class GdxPuck(world: World) {
             restitution = 0.6f // Bounce
             friction = 0.0f
             userData = this@GdxPuck
+            filterData = filterData.apply {
+                categoryBits = COLLISION_GROUP.toShort()
+                maskBits = GdxPlayer.STICK_AREA_COLLISION_GROUP.inv().toShort()
+            }
         }
         circleShape.dispose()
     }
@@ -55,16 +60,16 @@ class GdxPuck(world: World) {
         body.linearVelocity = Vector2.Zero
     }
 
-    fun registerContact() {
-        contactCount += 1
-    }
-
-    fun deregisterContact() {
-        contactCount -= 1
-        if (contactCount == 0 && body.fixtureList[0].isSensor) {
-            body.fixtureList[0].isSensor = false
-        }
-    }
+//    fun registerContact() {
+//        contactCount += 1
+//    }
+//
+//    fun deregisterContact() {
+//        contactCount -= 1
+//        if (contactCount == 0 && body.fixtureList[0].isSensor) {
+//            body.fixtureList[0].isSensor = false
+//        }
+//    }
 
     fun render(shapeRenderer: ShapeRenderer) {
         shapeRenderer.color = Color.BLACK

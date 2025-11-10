@@ -34,7 +34,9 @@ class GdxPlayer(
         const val MAX_SHOT_FORCE = 10f
         const val MAX_PASS_FORCE = 5f
 
-        const val RENDER_STICK_AREA = false
+        const val STICK_AREA_COLLISION_GROUP: Int = 1 shl 3
+
+        const val RENDER_STICK_AREA = true
 
         val stickTip: Vector2 = Vector2(0f, -1.8f * RADIUS)
         val stickArea = listOf(
@@ -81,6 +83,10 @@ class GdxPlayer(
         body.createFixture(stickAreaShape, 0f).apply {
             friction = 0.0f
             userData = this@GdxPlayer
+            filterData = filterData.apply {
+                categoryBits = STICK_AREA_COLLISION_GROUP.toShort()
+                maskBits = GdxPuck.COLLISION_GROUP.inv().toShort()
+            }
         }
 
         circleShape.dispose()
@@ -98,7 +104,6 @@ class GdxPlayer(
         puck.holder?.dropPuck()
         puck.holder = this
         this.puck = puck
-        puck.body.fixtureList.forEach { it.isSensor = true }
     }
 
     fun dropPuck() {
