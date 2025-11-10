@@ -13,9 +13,19 @@ import frallware.hockey.teams.StupidTeam
 
 /**
  * TODO:
- * - implement goalie
  * - Make puck not able to travel through things
  * - Add names to players
+ * - change how puck bounces off goal (only slow down if there was a goal)
+ * - make shot/pass accuracy worse at wide angles
+ * - paint circles
+ * - make goalie bigger maybe?
+ * - make scores overlay
+ * - don't allow puck pickup from behind
+ * - make puck pickup fail sometimes as high puck velocities
+ * - animate shooting puck
+ * - make puck pickup something that one has to act upon instead of automatic? (except for goalies maybe?)
+ * - generally improve rendering
+ * - [frallware.hockey.api.GameState].isFaceOff?
  */
 class Main : ApplicationAdapter() {
 
