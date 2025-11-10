@@ -40,7 +40,7 @@ class GdxPuck(world: World) {
         }
 
         body.createFixture(circleShape, 1.0f).apply {
-            restitution = 0.6f // Bounce
+            restitution = 0.3f // Bounce
             friction = 0.0f
             userData = this@GdxPuck
             filterData = filterData.apply {

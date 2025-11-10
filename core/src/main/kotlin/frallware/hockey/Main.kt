@@ -15,7 +15,6 @@ import frallware.hockey.teams.StupidTeam
  * TODO:
  * - Make puck not able to travel through things
  * - Add names to players
- * - change how puck bounces off goal (only slow down if there was a goal)
  * - make shot/pass accuracy worse at wide angles
  * - paint circles
  * - make goalie bigger maybe?

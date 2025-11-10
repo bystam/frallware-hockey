@@ -156,7 +156,7 @@ class GdxGame(
             if (puck != null && player != null) {
                 player.takePuck(puck)
             }
-            if (puck != null && goal != null) {
+            if (puck != null && goal != null && goalResetAt != null) {
                 puck.slowDown()
             }
             if (puck != null && goalSensor != null && goalResetAt == null) {
