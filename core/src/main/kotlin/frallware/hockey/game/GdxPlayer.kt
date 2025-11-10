@@ -29,7 +29,6 @@ class GdxPlayer(
         const val RADIUS = 0.6f
         const val MAX_VELOCITY = 25f
 
-        const val MAX_ACCELERATION = 15f
         const val MAX_GLIDE = 5f
         const val MAX_SHOT_FORCE = 10f
         const val MAX_PASS_FORCE = 5f
@@ -159,12 +158,22 @@ class GdxPlayer(
         }
 
         move.shotDestination?.let { destination ->
-            val position = body.worldCenter
+            val position = body.position
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
             val angleRandomness = Random.nextDouble(-0.8, 0.8) * (move.shotForce / MAX_SHOT_FORCE)
             destinationDirection.rotateRad(angleRandomness.toFloat())
 
             puck?.body?.applyLinearImpulse(destinationDirection.scl(move.shotForce), Vector2.Zero, true)
+            dropPuck()
+        }
+
+        move.passDestination?.let { destination ->
+            val position = body.position
+            val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
+            val angleRandomness = Random.nextDouble(-0.2, 0.2) * (move.passForce / MAX_PASS_FORCE)
+            destinationDirection.rotateRad(angleRandomness.toFloat())
+
+            puck?.body?.applyLinearImpulse(destinationDirection.scl(move.passForce), Vector2.Zero, true)
             dropPuck()
         }
 

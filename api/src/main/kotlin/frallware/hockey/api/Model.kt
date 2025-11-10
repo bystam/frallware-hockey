@@ -13,6 +13,8 @@ data class Point(
     val y: Float,
 ) {
     operator fun plus(vector: Vector): Point = Point(this.x + vector.dx, this.y + vector.dy)
+    operator fun minus(vector: Vector): Point = Point(this.x - vector.dx, this.y - vector.dy)
+    operator fun minus(point: Point): Vector = Vector(this.x - point.x, this.y - point.y)
 
     fun offset(dx: Float = 0f, dy: Float = 0f): Point = Point(this.x + dx, this.y + dy)
 

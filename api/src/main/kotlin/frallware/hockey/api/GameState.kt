@@ -1,5 +1,11 @@
 package frallware.hockey.api
 
+/**
+ * TODO:
+ * - starting positions
+ * - speed constants
+ * - make center of rink origin
+ */
 interface GameState {
     val puck: Puck
 
