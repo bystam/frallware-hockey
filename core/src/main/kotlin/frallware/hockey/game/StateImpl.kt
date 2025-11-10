@@ -54,5 +54,13 @@ class StateImpl(
                 return Vector(MathUtils.cos(angle), MathUtils.sin(angle))
             }
         override val hasPuck: Boolean get() = player.puck != null
+
+        override fun equals(other: Any?): Boolean {
+            return other is PlayerImpl && other.player === this.player
+        }
+
+        override fun hashCode(): Int {
+            return player.hashCode()
+        }
     }
 }
