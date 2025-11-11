@@ -31,6 +31,7 @@ import frallware.hockey.teams.MeidiTeam
  * - generally improve rendering
  * - [frallware.hockey.api.GameState].isFaceOff?
  * - Improve puck going through things...
+ * - Stop making players spin around when they are standing where they want to be
  */
 class Main : ApplicationAdapter() {
 

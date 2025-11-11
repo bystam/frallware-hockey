@@ -130,6 +130,8 @@ class GdxPlayer(
             val position = body.position
             val facingDirection = Vector2(1f, 0f).rotateRad(angle)
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
+            val currentSpeed = body.linearVelocity.len()
+            val turnSpeed = if (currentSpeed < MAX_VELOCITY / 3) 6f else 3f
 
             // https://stackoverflow.com/a/3461533
             val a = Vector2.Zero
@@ -137,16 +139,25 @@ class GdxPlayer(
             val c = destinationDirection
             val cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
             if (cross > 0.1) { // isLeft
-                body.angularVelocity = 3.06f
+                body.angularVelocity = turnSpeed
                 body.linearVelocity = body.linearVelocity.rotateRad(0.03f)
             } else if (cross < -0.1) { // isRight
-                body.angularVelocity = -3.06f
+                body.angularVelocity = -turnSpeed
                 body.linearVelocity = body.linearVelocity.rotateRad(-0.03f)
             } else {
                 body.angularVelocity = 0f
             }
 
-            val acceleration = move.moveSpeed - body.linearVelocity.len()
+            val speedDiscrepancy = move.moveSpeed - currentSpeed
+            val acceleration = when {
+                speedDiscrepancy > 10 -> 15f
+                speedDiscrepancy > 3 -> 8f
+                speedDiscrepancy > 0.5 -> 3f
+                speedDiscrepancy < -10 -> -10f
+                speedDiscrepancy < -5 -> -5f
+                speedDiscrepancy < -1 -> -2f
+                else -> 0f
+            }
             body.applyForceToCenter(Vector2(acceleration, 0f).rotateRad(body.angle), true)
         }
 
