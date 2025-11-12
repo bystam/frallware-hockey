@@ -34,7 +34,7 @@ class GdxScoreBoard(
         table.add(scoresLabel).expandX().left()
         table.add(timeLabel).expandX().right()
         table.setSize(table.prefWidth, table.prefHeight)
-        table.setPosition(20f, stage.height - table.prefHeight - 10f)
+        table.setPosition(20f, stage.height - table.prefHeight - 20f)
 
         // background color
         val pixmap = Pixmap(1, 1, Pixmap.Format.RGBA8888)
