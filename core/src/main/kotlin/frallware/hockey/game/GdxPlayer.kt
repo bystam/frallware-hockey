@@ -228,7 +228,7 @@ class GdxPlayer(
 
         val headOffset = Vector2(0.2f, 0f).rotateRad(body.angle)
 
-        shapeRenderer.color = Color.GREEN
+        shapeRenderer.color = Color.LIGHT_GRAY
         shapeRenderer.circle(
             body.position.x + headOffset.x,
             body.position.y + headOffset.y,

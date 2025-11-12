@@ -12,7 +12,6 @@ import frallware.hockey.teams.MeidiTeam
 /**
  * TODO:
  * - Make puck not able to travel through things
- * - make scores overlay
  * - Rewrite how skate speed works:
  *    - Instead of treating speed as acceleration, we treat it as speed
  *    - If the speed is lower than wanted, we apply acceleration,
