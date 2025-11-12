@@ -8,6 +8,7 @@ import frallware.hockey.api.Color
 import frallware.hockey.game.GdxGame
 import frallware.hockey.teams.FredrikTeam
 import frallware.hockey.teams.MeidiTeam
+import kotlin.system.exitProcess
 
 /**
  * TODO:
@@ -27,6 +28,7 @@ import frallware.hockey.teams.MeidiTeam
  * - [frallware.hockey.api.GameState].isFaceOff?
  * - Improve puck going through things...
  * - Stop making players spin around when they are standing where they want to be
+ * - Simplify math when building team by rotating their perspective and setting 0,0 at center of game
  */
 class Main : Game() {
 
@@ -39,6 +41,7 @@ class Main : Game() {
         ) {
             screen.dispose()
             println("Winner: $it")
+            exitProcess(0)
         }
     }
 
