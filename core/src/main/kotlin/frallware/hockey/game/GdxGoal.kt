@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
 import com.badlogic.gdx.physics.box2d.World
-import frallware.hockey.Constants
 
 class GdxGoal(world: World, val side: Side) {
 
@@ -42,10 +41,10 @@ class GdxGoal(world: World, val side: Side) {
     init {
         val bodyDef = BodyDef().apply {
             type = BodyDef.BodyType.StaticBody
-            val yPos = Constants.WORLD_HEIGHT / 2
+            val yPos = GdxRink.HEIGHT / 2
             when (side) {
-                Side.Left -> position.set(GOAL_OFFSET * Constants.WORLD_WIDTH, yPos)
-                Side.Right -> position.set((1f - GOAL_OFFSET) * Constants.WORLD_WIDTH, yPos)
+                Side.Left -> position.set(GOAL_OFFSET * GdxRink.WIDTH, yPos)
+                Side.Right -> position.set((1f - GOAL_OFFSET) * GdxRink.WIDTH, yPos)
             }
         }
 

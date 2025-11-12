@@ -35,7 +35,7 @@ class GdxPlayer(
 
         const val STICK_AREA_COLLISION_GROUP: Int = 1 shl 3
 
-        const val RENDER_STICK_AREA = true
+        const val RENDER_STICK_AREA = false
 
         val stickTip: Vector2 = Vector2(0f, -1.8f * RADIUS)
         val stickArea = listOf(

@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.World
-import frallware.hockey.Constants
 
 class GdxPuck(world: World) {
 
@@ -15,7 +14,7 @@ class GdxPuck(world: World) {
         const val RADIUS = 0.2f
         const val COLLISION_GROUP: Int = 1 shl 2
 
-        val startingPoint = Vector2(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2)
+        val startingPoint = Vector2(GdxRink.WIDTH / 2, GdxRink.HEIGHT / 2)
     }
 
     val body: Body

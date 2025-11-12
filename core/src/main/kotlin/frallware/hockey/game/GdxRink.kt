@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.ChainShape
 import com.badlogic.gdx.physics.box2d.World
-import frallware.hockey.Constants
 
 class GdxRink(
     val world: World,
@@ -19,7 +18,7 @@ class GdxRink(
 
     val body: Body = world.createBody(BodyDef().apply {
         type = BodyDef.BodyType.StaticBody
-        position.set(Constants.worldCenter)
+        position.set(WIDTH / 2, HEIGHT / 2)
     })
 
     object OutsideRink

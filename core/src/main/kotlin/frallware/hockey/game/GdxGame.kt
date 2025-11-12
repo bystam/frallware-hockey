@@ -1,6 +1,6 @@
 package frallware.hockey.game
 
-import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -14,40 +14,45 @@ import com.badlogic.gdx.physics.box2d.Manifold
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
-import frallware.hockey.Constants
+import com.badlogic.gdx.utils.viewport.ScreenViewport
 import frallware.hockey.api.HockeyTeam
 import frallware.hockey.api.PlayerStrategy
 import java.time.Duration
 import java.time.Instant
 
 class GdxGame(
-    private val world: World,
-    private val viewport: FitViewport,
     private val leftTeam: HockeyTeam,
     private val rightTeam: HockeyTeam,
-) {
+    private val onComplete: (winner: HockeyTeam?) -> Unit,
+) : ScreenAdapter() {
 
     companion object {
         val leftStartingPoints = listOf(
-            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 - 3f),
-            Vector2(Constants.WORLD_WIDTH / 2 - 5f, Constants.WORLD_HEIGHT / 2 + 3f),
-            Vector2(Constants.WORLD_WIDTH / 2 - 12f, Constants.WORLD_HEIGHT / 2 - 5f),
-            Vector2(Constants.WORLD_WIDTH / 2 - 12f, Constants.WORLD_HEIGHT / 2 + 5f),
+            Vector2(GdxRink.WIDTH / 2 - 5f, GdxRink.HEIGHT / 2 - 3f),
+            Vector2(GdxRink.WIDTH / 2 - 5f, GdxRink.HEIGHT / 2 + 3f),
+            Vector2(GdxRink.WIDTH / 2 - 12f, GdxRink.HEIGHT / 2 - 5f),
+            Vector2(GdxRink.WIDTH / 2 - 12f, GdxRink.HEIGHT / 2 + 5f),
         )
         val rightStartingPoints = listOf(
-            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 - 3f),
-            Vector2(Constants.WORLD_WIDTH / 2 + 5f, Constants.WORLD_HEIGHT / 2 + 3f),
-            Vector2(Constants.WORLD_WIDTH / 2 + 12f, Constants.WORLD_HEIGHT / 2 - 5f),
-            Vector2(Constants.WORLD_WIDTH / 2 + 12f, Constants.WORLD_HEIGHT / 2 + 5f),
+            Vector2(GdxRink.WIDTH / 2 + 5f, GdxRink.HEIGHT / 2 - 3f),
+            Vector2(GdxRink.WIDTH / 2 + 5f, GdxRink.HEIGHT / 2 + 3f),
+            Vector2(GdxRink.WIDTH / 2 + 12f, GdxRink.HEIGHT / 2 - 5f),
+            Vector2(GdxRink.WIDTH / 2 + 12f, GdxRink.HEIGHT / 2 + 5f),
         )
+
+        val matchLength: Duration = Duration.ofMinutes(1)
 
         const val FPS = 1f / 60
     }
 
     private val scores = mutableMapOf(Side.Left to 0, Side.Right to 0)
 
+    val worldViewport: FitViewport = FitViewport(GdxRink.WIDTH, GdxRink.HEIGHT)
+    val hudViewport: ScreenViewport = ScreenViewport()
+    private val world: World = World(Vector2.Zero, true)
+
     private val hockeyRink: GdxRink = GdxRink(world)
-    private val scoreBoard: GdxScoreBoard = GdxScoreBoard(viewport, scores)
+    private val scoreBoard: GdxScoreBoard = GdxScoreBoard(hudViewport, scores) { timeLeft }
     private val puck: GdxPuck = GdxPuck(world)
     private val leftGoal = GdxGoal(world, Side.Left)
     private val rightGoal = GdxGoal(world, Side.Right)
@@ -56,8 +61,11 @@ class GdxGame(
 
     private var fpsAcc: Float = 0f
 
+    private var timeLeft: Duration = matchLength
     private var goalResetAt: Instant? = null
-    private var gameStartAt: Instant = Instant.now() + Duration.ofSeconds(2)
+    private var roundStart: Instant = Instant.now() + Duration.ofSeconds(2)
+    private var hasEnded: Boolean = false
+
     private val zoomAnimation: TimedInterpolation = TimedInterpolation(
         fromValue = 0.4f,
         toValue = 0.7f,
@@ -85,42 +93,62 @@ class GdxGame(
         world.setContactListener(HockeyContactListener())
     }
 
-    fun reset() {
-        for (player in allPlayers) {
-            player.reset()
-        }
-        puck.reset()
+    override fun resize(width: Int, height: Int) {
+        worldViewport.update(width, height, true)
+        hudViewport.update(width, height, true)
     }
 
-    fun render() {
-        if (goalResetAt != null && goalResetAt!! < Instant.now()) {
-            reset()
-            goalResetAt = null
-            zoomAnimation.reset()
-            gameStartAt = Instant.now() + Duration.ofSeconds(2)
+    override fun render(delta: Float) {
+        if (hasEnded) return
+        if (timeLeft < Duration.ZERO) {
+            hasEnded = true
+            val leftPoints = scores[Side.Left]!!
+            val rightPoints = scores[Side.Right]!!
+            onComplete(
+                when {
+                    leftPoints > rightPoints -> leftTeam
+                    leftPoints < rightPoints -> rightTeam
+                    else -> null
+                }
+            )
+            return
         }
 
-        if (gameStartAt < Instant.now()) {
+        if (goalResetAt != null && goalResetAt!! < Instant.now()) {
+            for (player in allPlayers) {
+                player.reset()
+            }
+            puck.reset()
+            goalResetAt = null
+            zoomAnimation.reset()
+            roundStart = Instant.now() + Duration.ofSeconds(2)
+        }
+
+        if (Instant.now() > roundStart) {
+            // Actually run game
             for (player in allPlayers) {
                 player.update()
             }
+            if (goalResetAt == null) {
+                timeLeft -= Duration.ofMillis((1000 * delta).toLong())
+            }
         }
 
-        fpsAcc += Gdx.graphics.deltaTime
+        fpsAcc += delta
         while (fpsAcc > FPS) {
             world.step(FPS, 6, 2)
             fpsAcc -= FPS
         }
 
         val puckPos = puck.body.worldCenter
-        val camera = viewport.camera as OrthographicCamera
+        val camera = worldViewport.camera as OrthographicCamera
         camera.position.set(puckPos.x, puckPos.y, 0f)
         camera.zoom = zoomAnimation.next()
 
         ScreenUtils.clear(Color.WHITE)
-        viewport.apply()
+        worldViewport.apply()
 
-        shapeRenderer.projectionMatrix = viewport.camera.combined
+        shapeRenderer.projectionMatrix = worldViewport.camera.combined
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
@@ -136,9 +164,10 @@ class GdxGame(
         scoreBoard.render()
     }
 
-    fun dispose() {
+    override fun dispose() {
         world.dispose()
         shapeRenderer.dispose()
+        scoreBoard.dispose()
     }
 
     inner class HockeyContactListener : ContactListener {
