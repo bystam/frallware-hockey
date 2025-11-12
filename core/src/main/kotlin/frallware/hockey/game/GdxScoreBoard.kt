@@ -51,8 +51,7 @@ class GdxScoreBoard(
     fun render() {
         scoresLabel.setText("${scores[Side.Left]} - ${scores[Side.Right]}")
         val time = timeLeft()
-        timeLabel.setText(String.format("%d:%02d", time.toMinutesPart(), time.toSecondsPart()))
-
+        timeLabel.setText(String.format("%d:%02d", time.toMinutesPart(), time.toSecondsPart().coerceAtLeast(0)))
 
         stage.act()
         stage.draw()
