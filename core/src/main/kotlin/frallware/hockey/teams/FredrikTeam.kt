@@ -108,22 +108,17 @@ class FredrikTeam(override val color: Color) : HockeyTeam {
     class Goalie : GoalieStrategy {
         override val name: String = "StupidGoalie"
         lateinit var startingPoint: Point
-        lateinit var oneSide: Point
-        lateinit var anotherSide: Point
 
         override fun step(state: GameState, operations: GoalieOperations) {
             if (!::startingPoint.isInitialized) {
                 startingPoint = state.me.position
-                oneSide = startingPoint.offset(dy = 3f)
-                anotherSide = startingPoint.offset(dy = -3f)
             }
+            val maxOffset = (state.puck.position.y - startingPoint.y).coerceIn(-2f, 2f)
+            operations.glide(Point(startingPoint.x, startingPoint.y + maxOffset), 5f)
             operations.face(state.puck.position)
 
-            val time = (System.currentTimeMillis() / 1000) % 4
-            if (time < 2) {
-                operations.glide(oneSide, 2f)
-            } else {
-                operations.glide(anotherSide, 2f)
+            if (state.me.hasPuck) {
+                operations.shoot(state.enemyGoalPosition, 5f)
             }
         }
     }

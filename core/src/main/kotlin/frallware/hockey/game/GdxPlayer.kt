@@ -192,14 +192,19 @@ class GdxPlayer(
         move.glideTowards?.let { destination ->
             // negative should be glide to the goalies right
             val position = body.position
-            val glideSpeed = Vector2(destination.x - position.x, destination.y - position.y).nor().scl(move.moveSpeed)
-            body.linearVelocity = glideSpeed
+            val distance = Vector2(destination.x - position.x, destination.y - position.y)
+            val speed = when {
+                distance.len() > 0.5 -> move.moveSpeed
+                distance.len() > 0.1 -> 0.5f
+                else -> 0f
+            }
+            body.linearVelocity = distance.nor().scl(speed)
         }
 
         move.shotDestination?.let { destination ->
             val position = body.position
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
-            val angleRandomness = Random.nextDouble(-0.4, 0.4) * (move.shotForce / MAX_SHOT_FORCE)
+            val angleRandomness = Random.nextDouble(-0.6, 0.6) * (move.shotForce / MAX_SHOT_FORCE)
             destinationDirection.rotateRad(angleRandomness.toFloat())
 
             puck?.body?.applyLinearImpulse(destinationDirection.scl(move.shotForce), Vector2.Zero, true)
