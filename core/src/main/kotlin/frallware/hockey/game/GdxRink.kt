@@ -14,6 +14,8 @@ class GdxRink(
     companion object {
         const val WIDTH = 100f
         const val HEIGHT = 50f
+        const val FACEOFF_CIRCLE_RADIUS = 7f
+        const val TEAM_ZONE_LINE_OFFSET = 20f
     }
 
     val body: Body = world.createBody(BodyDef().apply {
@@ -55,10 +57,33 @@ class GdxRink(
     }
 
     fun render(shapeRenderer: ShapeRenderer) {
-        shapeRenderer.color = Color.RED
+        val center = body.position
+
+        shapeRenderer.drawFaceoffCircle(center)
+        shapeRenderer.drawVerticalLine(Color.RED.withAlpha(0.5f), WIDTH / 2)
+
+        shapeRenderer.drawVerticalLine(Color.BLUE.withAlpha(0.5f), WIDTH / 2 - 18f)
+        shapeRenderer.drawVerticalLine(Color.BLUE.withAlpha(0.5f), WIDTH / 2 + 18f)
+
+        // draw outer rink
+        shapeRenderer.color = Color.DARK_GRAY
         for ((from, to) in absoluteEdgePoints.windowed(2)) {
             shapeRenderer.rectLine(from, to, 0.3f)
         }
         shapeRenderer.rectLine(absoluteEdgePoints.last(), absoluteEdgePoints.first(), 0.3f)
+    }
+
+    private fun ShapeRenderer.drawFaceoffCircle(point: Vector2) {
+        color = Color.RED.withAlpha(0.2f)
+        circle(point.x, point.y, FACEOFF_CIRCLE_RADIUS, 40)
+        color = Color.WHITE
+        circle(point.x, point.y, FACEOFF_CIRCLE_RADIUS - 0.2f, 40)
+        color = Color.RED.withAlpha(0.8f)
+        circle(point.x, point.y, 0.5f, 20)
+    }
+
+    private fun ShapeRenderer.drawVerticalLine(color: Color, x: Float) {
+        this.color = color
+        rectLine(x, 0f, x, HEIGHT, 0.4f)
     }
 }

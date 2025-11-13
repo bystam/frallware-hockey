@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World
 class GdxGoal(world: World, val side: Side) {
 
     companion object {
-        const val GOAL_OFFSET: Float = 0.2f
+        const val GOAL_OFFSET: Float = 0.1f
         const val CAGE_THICKNESS: Float = 0.2f
         const val RENDER_GOAL_SENSOR = false
     }

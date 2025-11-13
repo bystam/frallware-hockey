@@ -5,6 +5,7 @@ package frallware.hockey.lwjgl3
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import frallware.hockey.Main
+import frallware.hockey.game.GdxRink
 
 /** Launches the desktop (LWJGL3) application. */
 fun main() {
@@ -23,7 +24,9 @@ fun main() {
         //// useful for testing performance, but can also be very stressful to some hardware.
         //// You may also need to configure GPU drivers to fully disable Vsync; this can cause screen tearing.
 
-        setWindowedMode(1600, 800)
+        val width = 1600
+        val height = width * GdxRink.HEIGHT / GdxRink.WIDTH
+        setWindowedMode(width, height.toInt())
         //// You can change these files; they are in lwjgl3/src/main/resources/ .
         //// They can also be loaded from the root of assets/ .
         setWindowIcon(*(arrayOf(128, 64, 32, 16).map { "libgdx$it.png" }.toTypedArray()))
