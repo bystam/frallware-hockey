@@ -183,7 +183,7 @@ class GdxPlayer(
         move.shotDestination?.let { destination ->
             val position = body.position
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
-            val angleRandomness = Random.nextDouble(-0.8, 0.8) * (move.shotForce / MAX_SHOT_FORCE)
+            val angleRandomness = Random.nextDouble(-0.4, 0.4) * (move.shotForce / MAX_SHOT_FORCE)
             destinationDirection.rotateRad(angleRandomness.toFloat())
 
             puck?.body?.applyLinearImpulse(destinationDirection.scl(move.shotForce), Vector2.Zero, true)
@@ -193,7 +193,7 @@ class GdxPlayer(
         move.passDestination?.let { destination ->
             val position = body.position
             val destinationDirection = Vector2(destination.x - position.x, destination.y - position.y).nor()
-            val angleRandomness = Random.nextDouble(-0.2, 0.2) * (move.passForce / MAX_PASS_FORCE)
+            val angleRandomness = Random.nextDouble(-0.05, 0.05) * (move.passForce / MAX_PASS_FORCE)
             destinationDirection.rotateRad(angleRandomness.toFloat())
 
             puck?.body?.applyLinearImpulse(destinationDirection.scl(move.passForce), Vector2.Zero, true)
