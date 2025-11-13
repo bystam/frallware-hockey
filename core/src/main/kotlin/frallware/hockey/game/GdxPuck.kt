@@ -44,7 +44,7 @@ class GdxPuck(world: World) {
             userData = this@GdxPuck
             filterData = filterData.apply {
                 categoryBits = COLLISION_GROUP.toShort()
-                maskBits = GdxPlayer.STICK_AREA_COLLISION_GROUP.inv().toShort()
+                maskBits = GdxPlayer.PLAYER_COLLISION_GROUP.inv().toShort()
             }
         }
         circleShape.dispose()

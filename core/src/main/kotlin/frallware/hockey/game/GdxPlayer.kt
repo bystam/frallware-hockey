@@ -33,7 +33,7 @@ class GdxPlayer(
         const val MAX_SHOT_FORCE = 10f
         const val MAX_PASS_FORCE = 5f
 
-        const val STICK_AREA_COLLISION_GROUP: Int = 1 shl 3
+        const val PLAYER_COLLISION_GROUP: Int = 1 shl 3
 
         const val RENDER_STICK_AREA = false
 
@@ -70,20 +70,32 @@ class GdxPlayer(
             radius = RADIUS
         }
 
+        // Generally speaking, the player should not collide with the puck...
+        // (the puck should be able to slide through the legs of the player)
+        // Thus, the filterData
         body.createFixture(circleShape, 1f).apply {
             restitution = 0.2f // Bounce
             friction = 0.6f
+            userData = this@GdxPlayer
+            filterData = filterData.apply {
+                categoryBits = PLAYER_COLLISION_GROUP.toShort()
+                maskBits = GdxPuck.COLLISION_GROUP.inv().toShort()
+            }
+        }
+
+        // but we have a sensor-fixture that lets us detect collision with the puck to pick it up
+        body.createFixture(circleShape, 0f).apply {
+            isSensor = true
             userData = this@GdxPlayer
         }
 
         val stickAreaShape = PolygonShape()
         stickAreaShape.set(stickArea.toTypedArray())
-
         body.createFixture(stickAreaShape, 0f).apply {
             friction = 0.0f
             userData = this@GdxPlayer
             filterData = filterData.apply {
-                categoryBits = STICK_AREA_COLLISION_GROUP.toShort()
+                categoryBits = PLAYER_COLLISION_GROUP.toShort()
                 maskBits = GdxPuck.COLLISION_GROUP.inv().toShort()
             }
         }
