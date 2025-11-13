@@ -11,6 +11,7 @@ import frallware.hockey.api.Vector
 class StateImpl(
     val player: GdxPlayer,
     val thePuck: GdxPuck,
+    val isFacingOff: (GdxPlayer) -> Boolean,
     friendlyGoalPosition: Vector2,
     friendlyPlayers: List<GdxPlayer>,
     friendlyGoalie: GdxPlayer,
@@ -42,7 +43,7 @@ class StateImpl(
 
     }
 
-    class PlayerImpl(val player: GdxPlayer) : Player {
+    inner class PlayerImpl(val player: GdxPlayer) : Player {
         override val position: Point
             get() {
                 val pos = player.body.worldCenter
@@ -54,6 +55,8 @@ class StateImpl(
                 return Vector(MathUtils.cos(angle), MathUtils.sin(angle))
             }
         override val hasPuck: Boolean get() = player.puck != null
+
+        override val isFacingOff: Boolean get() = isFacingOff(player)
 
         override fun equals(other: Any?): Boolean {
             return other is PlayerImpl && other.player === this.player

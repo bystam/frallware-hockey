@@ -27,18 +27,18 @@ class GdxGame(
 ) : ScreenAdapter() {
 
     companion object {
-        val leftStartingPoints = listOf(
-            Vector2(GdxRink.WIDTH / 2 - 5f, GdxRink.HEIGHT / 2 - 3f),
-            Vector2(GdxRink.WIDTH / 2 - 5f, GdxRink.HEIGHT / 2 + 3f),
-            Vector2(GdxRink.WIDTH / 2 - 12f, GdxRink.HEIGHT / 2 - 5f),
-            Vector2(GdxRink.WIDTH / 2 - 12f, GdxRink.HEIGHT / 2 + 5f),
+        val startingPointOffsets = listOf(
+            Vector2(-3f, 0f), // faceoff
+            Vector2(-6f, 3f),
+            Vector2(-12f, -4f),
+            Vector2(-12f, 4f),
         )
-        val rightStartingPoints = listOf(
-            Vector2(GdxRink.WIDTH / 2 + 5f, GdxRink.HEIGHT / 2 - 3f),
-            Vector2(GdxRink.WIDTH / 2 + 5f, GdxRink.HEIGHT / 2 + 3f),
-            Vector2(GdxRink.WIDTH / 2 + 12f, GdxRink.HEIGHT / 2 - 5f),
-            Vector2(GdxRink.WIDTH / 2 + 12f, GdxRink.HEIGHT / 2 + 5f),
-        )
+        val leftStartingPoints = startingPointOffsets.map {
+            Vector2(GdxRink.WIDTH / 2, GdxRink.HEIGHT / 2) + it
+        }
+        val rightStartingPoints = startingPointOffsets.map {
+            Vector2(GdxRink.WIDTH / 2, GdxRink.HEIGHT / 2) + it.cpy().rotateDeg(180f)
+        }
 
         val matchLength: Duration = Duration.ofMinutes(1)
 
@@ -64,6 +64,7 @@ class GdxGame(
     private var timeLeft: Duration = matchLength
     private var goalResetAt: Instant? = null
     private var roundStart: Instant = Instant.now() + Duration.ofSeconds(2)
+    private var isFaceoff = true
     private var hasEnded: Boolean = false
 
     private val zoomAnimation: TimedInterpolation = TimedInterpolation(
@@ -122,6 +123,7 @@ class GdxGame(
             goalResetAt = null
             zoomAnimation.reset()
             roundStart = Instant.now() + Duration.ofSeconds(2)
+            isFaceoff = true
         }
 
         if (Instant.now() > roundStart) {
@@ -180,10 +182,9 @@ class GdxGame(
             val goalSensor = (aData as? GdxGoal.Sensor) ?: (bData as? GdxGoal.Sensor)
             val outsideRink = (aData as? GdxRink.OutsideRink) ?: (bData as? GdxRink.OutsideRink)
 
-//            puck?.registerContact()
-
             if (puck != null && player != null) {
                 player.tryTakePuck(puck)
+                isFaceoff = false
             }
             if (puck != null && goal != null && goalResetAt != null) {
                 puck.slowDown()
@@ -205,10 +206,6 @@ class GdxGame(
         }
 
         override fun endContact(contact: Contact) {
-//            val aData = contact.fixtureA.userData
-//            val bData = contact.fixtureB.userData
-//            val puck = aData as? GdxPuck ?: bData as? GdxPuck
-//            puck?.deregisterContact()
         }
 
         override fun preSolve(
@@ -261,6 +258,8 @@ class GdxGame(
         return StateImpl(
             player = player,
             thePuck = puck,
+            // It's always the first player that's taking the faceoff
+            isFacingOff = { isFaceoff && (it == friendlyPlayers.first() || it == enemyPlayers.first()) },
             friendlyGoalPosition = friendlyGoal,
             friendlyPlayers = friendlyPlayers,
             friendlyGoalie = friendlyGoalie,

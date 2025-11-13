@@ -23,6 +23,7 @@ interface GameState {
 interface Player {
     val position: Point
     val heading: Vector
+    val isFacingOff: Boolean
 
     val hasPuck: Boolean
 }

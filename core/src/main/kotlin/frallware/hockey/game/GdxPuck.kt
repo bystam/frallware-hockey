@@ -20,9 +20,7 @@ class GdxPuck(world: World) {
     val body: Body
 
     var holder: GdxPlayer? = null
-
-//    private var contactCount: Int = 0
-
+    
     init {
         // Create a dynamic body for the ball
         val bodyDef = BodyDef().apply {
@@ -58,17 +56,6 @@ class GdxPuck(world: World) {
         body.setTransform(startingPoint, 0f)
         body.linearVelocity = Vector2.Zero
     }
-
-//    fun registerContact() {
-//        contactCount += 1
-//    }
-//
-//    fun deregisterContact() {
-//        contactCount -= 1
-//        if (contactCount == 0 && body.fixtureList[0].isSensor) {
-//            body.fixtureList[0].isSensor = false
-//        }
-//    }
 
     fun render(shapeRenderer: ShapeRenderer) {
         shapeRenderer.color = Color.BLACK
