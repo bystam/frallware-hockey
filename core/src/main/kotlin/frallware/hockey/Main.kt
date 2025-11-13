@@ -12,21 +12,12 @@ import kotlin.system.exitProcess
 
 /**
  * TODO:
- * - Make puck not able to travel through things
- * - Rewrite how skate speed works:
- *    - Instead of treating speed as acceleration, we treat it as speed
- *    - If the speed is lower than wanted, we apply acceleration,
- *    - If the speed is higher than wanted, we apply break
  * - Add names to players
  * - make shot/pass accuracy worse at wide angles
- * - paint circles
- * - make goalie bigger maybe?
  * - don't allow puck pickup from behind
  * - animate shooting puck
  * - make puck pickup something that one has to act upon instead of automatic? (except for goalies maybe?)
  * - generally improve rendering
- * - [frallware.hockey.api.GameState].isFaceOff?
- * - Improve puck going through things...
  * - Stop making players spin around when they are standing where they want to be
  * - Simplify math when building team by rotating their perspective and setting 0,0 at center of game
  */
