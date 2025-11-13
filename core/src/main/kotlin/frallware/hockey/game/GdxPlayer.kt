@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
 import frallware.hockey.api.GoalieOperations
@@ -26,7 +25,6 @@ class GdxPlayer(
     val stateMaker: (player: GdxPlayer) -> StateImpl
 ) {
     companion object {
-        const val RADIUS = 0.6f
         const val MAX_VELOCITY = 25f
 
         const val MAX_GLIDE = 5f
@@ -36,17 +34,22 @@ class GdxPlayer(
         const val PLAYER_COLLISION_GROUP: Int = 1 shl 3
 
         const val RENDER_STICK_AREA = false
-
-        val stickTip: Vector2 = Vector2(0f, -1.8f * RADIUS)
-        val stickArea = listOf(
-            Vector2.Zero,
-            stickTip,
-            stickTip + Vector2(0.3f, 0.1f),
-            Vector2(RADIUS, 0f).rotateRad(-0.3f),
-        )
     }
 
     val body: Body
+    val bodyRect = when (strategy) {
+        is GoalieStrategy -> RoundedRect.create(1.2f, 1.6f, 0.4f, 3)
+        is SkaterStrategy -> RoundedRect.create(1.0f, 1.2f, 0.4f, 3)
+    }
+    val bodyPolygons: List<Triple<Vector2, Vector2, Vector2>> = bodyRect.polygonTriangles()
+    val stickTip: Vector2 = Vector2(0f, -0.9f * bodyRect.height)
+    val stickArea = listOf(
+        Vector2.Zero,
+        stickTip,
+        stickTip + Vector2(0.3f, 0.1f),
+        bodyRect.bottomRightPoints.last(),
+    )
+
 
     var puck: GdxPuck? = null
         private set
@@ -65,30 +68,34 @@ class GdxPlayer(
         body = world.createBody(bodyDef)
         body.isFixedRotation = true
 
-        // Create circular shape for the ball
-        val circleShape = CircleShape().apply {
-            radius = RADIUS
-        }
 
-        // Generally speaking, the player should not collide with the puck...
-        // (the puck should be able to slide through the legs of the player)
-        // Thus, the filterData
-        body.createFixture(circleShape, 1f).apply {
-            restitution = 0.2f // Bounce
-            friction = 0.6f
-            userData = this@GdxPlayer
-            filterData = filterData.apply {
-                categoryBits = PLAYER_COLLISION_GROUP.toShort()
-                maskBits = GdxPuck.COLLISION_GROUP.inv().toShort()
+        val bodyShape = PolygonShape()
+
+        for (polygon in bodyPolygons) {
+            // Generally speaking, the player should not collide with the puck...
+            // (the puck should be able to slide through the legs of the player)
+            // Thus, the filterData
+
+            bodyShape.set(arrayOf(polygon.first, polygon.second, polygon.third))
+            body.createFixture(bodyShape, 1f).apply {
+                restitution = 0.2f // Bounce
+                friction = 0.6f
+                userData = this@GdxPlayer
+                filterData = filterData.apply {
+                    categoryBits = PLAYER_COLLISION_GROUP.toShort()
+                    maskBits = GdxPuck.COLLISION_GROUP.inv().toShort()
+                }
+            }
+
+            // but we have a sensor-fixture that lets us detect collision with the puck to pick it up
+            body.createFixture(bodyShape, 0f).apply {
+                isSensor = true
+                userData = this@GdxPlayer
             }
         }
 
-        // but we have a sensor-fixture that lets us detect collision with the puck to pick it up
-        body.createFixture(circleShape, 0f).apply {
-            isSensor = true
-            userData = this@GdxPlayer
-        }
-
+        // this is used to make sure the place where we drag the puck can't overlap with things like
+        // the rink or the goal cage
         val stickAreaShape = PolygonShape()
         stickAreaShape.set(stickArea.toTypedArray())
         body.createFixture(stickAreaShape, 0f).apply {
@@ -99,8 +106,13 @@ class GdxPlayer(
                 maskBits = GdxPuck.COLLISION_GROUP.inv().toShort()
             }
         }
+        // we should also be able to pick up the puck in this area
+        body.createFixture(stickAreaShape, 0f).apply {
+            isSensor = true
+            userData = this@GdxPlayer
+        }
 
-        circleShape.dispose()
+        bodyShape.dispose()
         stickAreaShape.dispose()
     }
 
@@ -112,8 +124,12 @@ class GdxPlayer(
     }
 
     fun tryTakePuck(puck: GdxPuck) {
+        val failureChance = when (strategy) {
+            is GoalieStrategy -> 0.1
+            is SkaterStrategy -> 0.3
+        }
         val puckSpeed = puck.body.linearVelocity.len()
-        if (puckSpeed > 50f && Random.boolean(0.3)) {
+        if (puckSpeed > 50f && Random.boolean(failureChance)) {
             // failed to take it
             return
         }
@@ -152,10 +168,10 @@ class GdxPlayer(
             val cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
             if (cross > 0.1) { // isLeft
                 body.angularVelocity = turnSpeed
-                body.linearVelocity = body.linearVelocity.rotateRad(0.03f)
+                body.linearVelocity = body.linearVelocity.rotateRad(0.025f)
             } else if (cross < -0.1) { // isRight
                 body.angularVelocity = -turnSpeed
-                body.linearVelocity = body.linearVelocity.rotateRad(-0.03f)
+                body.linearVelocity = body.linearVelocity.rotateRad(-0.025f)
             } else {
                 body.angularVelocity = 0f
             }
@@ -200,14 +216,6 @@ class GdxPlayer(
             dropPuck()
         }
 
-        // Clamp velocity to max speed
-//        val velocity = body.linearVelocity
-//        val speed = velocity.len()
-//        if (speed > MAX_VELOCITY) {
-//            velocity.scl(MAX_VELOCITY / speed)
-//            body.linearVelocity = velocity
-//        }
-
         puck?.let { puck ->
             val puckOffset = (stickTip + Vector2(0.1f, 0.3f)).rotateRad(body.angle)
             val worldPos = body.position.cpy().add(puckOffset)
@@ -217,6 +225,7 @@ class GdxPlayer(
     }
 
     fun render(shapeRenderer: ShapeRenderer) {
+        val center = body.position
         if (RENDER_STICK_AREA) {
             val rotatedArea = stickArea.map { it.cpy().rotateRad(body.angle) }
             shapeRenderer.color = Color.GRAY
@@ -231,15 +240,18 @@ class GdxPlayer(
         shapeRenderer.rectLine(relativeStickTip, body.position, 0.1f)
 
         shapeRenderer.color = color
-        shapeRenderer.circle(
-            body.position.x,
-            body.position.y,
-            RADIUS,
-            20
-        )
+        for (polygon in bodyPolygons) {
+            val a = polygon.first.cpy().rotateRad(body.angle)
+            val b = polygon.second.cpy().rotateRad(body.angle)
+            val c = polygon.third.cpy().rotateRad(body.angle)
+            shapeRenderer.triangle(
+                a.x + center.x, a.y + center.y,
+                b.x + center.x, b.y + center.y,
+                c.x + center.x, c.y + center.y,
+            )
+        }
 
         val headOffset = Vector2(0.2f, 0f).rotateRad(body.angle)
-
         shapeRenderer.color = Color.LIGHT_GRAY
         shapeRenderer.circle(
             body.position.x + headOffset.x,

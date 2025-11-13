@@ -2,6 +2,7 @@ package frallware.hockey.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.EarClippingTriangulator
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
@@ -28,6 +29,8 @@ enum class Side {
 }
 
 class RoundedRect(
+    val width: Float,
+    val height: Float,
     val topRightPoints: List<Vector2>,
     val topLeftPoints: List<Vector2>,
     val bottomLeftPoints: List<Vector2>,
@@ -35,6 +38,25 @@ class RoundedRect(
 ) {
 
     val allPoints = topRightPoints + topLeftPoints + bottomLeftPoints + bottomRightPoints
+
+    fun polygonTriangles(): List<Triple<Vector2, Vector2, Vector2>> {
+        val vertices = allPoints.flatMap { listOf(it.x, it.y) }.toFloatArray()
+        val indices = EarClippingTriangulator().computeTriangles(vertices)
+
+        val result = mutableListOf<Triple<Vector2, Vector2, Vector2>>()
+        for (i in (0..<indices.size) step 3) {
+            val idx1 = indices.get(i) * 2
+            val idx2 = indices.get(i + 1) * 2
+            val idx3 = indices.get(i + 2) * 2
+
+            result += Triple(
+                Vector2(vertices[idx1], vertices[idx1 + 1]),
+                Vector2(vertices[idx2], vertices[idx2 + 1]),
+                Vector2(vertices[idx3], vertices[idx3 + 1]),
+            )
+        }
+        return result
+    }
 
     companion object {
         fun create(width: Float, height: Float, radius: Float, segmentsPerCorner: Int): RoundedRect {
@@ -73,6 +95,8 @@ class RoundedRect(
             )
 
             return RoundedRect(
+                width = width,
+                height = height,
                 topLeftPoints = topLeftPoints,
                 topRightPoints = topRightPoints,
                 bottomRightPoints = bottomRightPoints,
