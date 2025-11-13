@@ -30,23 +30,10 @@ class StateImpl(
 
     private val allPlayers = this.friendlyPlayers + this.enemyPlayers
 
-    inner class PuckImpl : Puck {
-        override val holder: Player?
-            get() {
-                return allPlayers.find { it.player === thePuck.holder }
-            }
-        override val position: Point
-            get() {
-                val pos = thePuck.body.worldCenter
-                return Point(pos.x, pos.y)
-            }
-
-    }
-
     inner class PlayerImpl(val player: GdxPlayer) : Player {
         override val position: Point
             get() {
-                val pos = player.body.worldCenter
+                val pos = player.body.position
                 return Point(pos.x, pos.y)
             }
         override val heading: Vector
@@ -54,6 +41,12 @@ class StateImpl(
                 val angle = player.body.angle
                 return Vector(MathUtils.cos(angle), MathUtils.sin(angle))
             }
+        override val velocity: Vector
+            get() {
+                val vel = thePuck.body.linearVelocity
+                return Vector(vel.x, vel.y)
+            }
+
         override val hasPuck: Boolean get() = player.puck != null
 
         override val isFacingOff: Boolean get() = isFacingOff(player)
@@ -65,5 +58,23 @@ class StateImpl(
         override fun hashCode(): Int {
             return player.hashCode()
         }
+    }
+
+    inner class PuckImpl : Puck {
+        override val holder: Player?
+            get() {
+                return allPlayers.find { it.player === thePuck.holder }
+            }
+        override val position: Point
+            get() {
+                val pos = thePuck.body.position
+                return Point(pos.x, pos.y)
+            }
+        override val velocity: Vector
+            get() {
+                val vel = thePuck.body.linearVelocity
+                return Vector(vel.x, vel.y)
+            }
+
     }
 }

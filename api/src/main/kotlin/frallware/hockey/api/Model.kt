@@ -1,6 +1,7 @@
 package frallware.hockey.api
 
 import kotlin.math.hypot
+import kotlin.math.sqrt
 
 data class Color(
     val r: Float,
@@ -29,7 +30,8 @@ data class Vector(
     val dx: Float = 0f,
     val dy: Float = 0f,
 ) {
-    operator fun times(factor: Float): Vector = Vector(dx * factor, dy * factor)
+    val length: Float get() = sqrt(dx * dx + dy * dy)
 
+    operator fun times(factor: Float): Vector = Vector(dx * factor, dy * factor)
     operator fun plus(vector: Vector): Vector = Vector(this.dx + vector.dx, this.dy + vector.dy)
 }

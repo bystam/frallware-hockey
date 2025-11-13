@@ -23,6 +23,7 @@ interface GameState {
 interface Player {
     val position: Point
     val heading: Vector
+    val velocity: Vector
     val isFacingOff: Boolean
 
     val hasPuck: Boolean
@@ -31,4 +32,5 @@ interface Player {
 interface Puck {
     val holder: Player?
     val position: Point
+    val velocity: Vector
 }
